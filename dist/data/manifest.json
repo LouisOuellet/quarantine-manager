@@ -1,0 +1,142 @@
+{
+    "title": "APP Maker",
+    "language": "english",
+    "page": "dashboard",
+    "timezone": "America\/Toronto",
+    "SQLlimit": "500",
+    "registration": false,
+    "forgot": true,
+    "customization": {
+        "pace": {
+            "value": "info",
+            "type": "select"
+        },
+        "logobg": {
+            "value": "dark",
+            "type": "select"
+        },
+        "nav": {
+            "value": "primary",
+            "type": "select"
+        },
+        "navmode": {
+            "value": "dark",
+            "type": "select"
+        },
+        "sidenav": {
+            "value": "primary",
+            "type": "select"
+        },
+        "sidenavmode": {
+            "value": "dark",
+            "type": "select"
+        },
+        "darkmode": {
+            "value": true,
+            "type": "switch"
+        },
+        "swalPosition": {
+            "value": "top",
+            "type": "select"
+        },
+        "swalTimer": {
+            "value": 3000,
+            "type": "number"
+        },
+        "breadcrumbsMax": {
+            "value": 5,
+            "type": "number"
+        },
+        "ProfileWidgetLocation": {
+            "value": "Sidebar",
+            "type": "select"
+        },
+        "landingPage": {
+            "value": "dashboard",
+            "type": "select"
+        },
+        "showInlineCallsControls": {
+            "value": true,
+            "type": "switch"
+        },
+        "showCallWidget": {
+            "value": true,
+            "type": "switch"
+        },
+        "callWidgetLocation": {
+            "value": "bottomRight",
+            "type": "select"
+        },
+        "callStatus": {
+            "value": "calls",
+            "type": "select"
+        },
+        "organizationsStatus": {
+            "value": "organizations",
+            "type": "select"
+        }
+    },
+    "plugins": {
+        "dashboard": {
+            "status": true
+        },
+        "groups": {
+            "status": true
+        },
+        "organizations": {
+            "status": true
+        },
+        "plugins": {
+            "status": true
+        },
+        "notifications": {
+            "status": true
+        },
+        "profile": {
+            "status": true
+        },
+        "roles": {
+            "status": true
+        },
+        "search": {
+            "status": true
+        },
+        "settings": {
+            "status": true
+        },
+        "tasks": {
+            "status": true
+        },
+        "users": {
+            "status": true
+        },
+        "welcome": {
+            "status": true
+        }
+    },
+    "log_level": 3,
+    "credit": "ALB Compagnie International",
+    "credit_url": "https:\/\/albcie.com\/",
+    "version": "21.12-dev",
+    "build": 463,
+    "repository": {
+        "name": "appmaker",
+        "branch": "dev",
+        "host": {
+            "git": "https:\/\/github.com\/LouisOuellet\/",
+            "raw": "https:\/\/raw.githubusercontent.com\/LouisOuellet\/"
+        },
+        "manifest": "\/dist\/data\/manifest.json",
+        "branches": [
+            "stable",
+            "pre-release",
+            "dev"
+        ]
+    },
+    "lsp": {
+        "required": false,
+        "host": "https:\/\/license.albcie.com\/",
+        "application": "ALB-Connect",
+        "token": "$2y$10$RYbZ3aqz8d9jWQm9pQZUz.GYUlMkm8nkxHSUAdssPW5.QlMb.B6Py"
+    }
+}

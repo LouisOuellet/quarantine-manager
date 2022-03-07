@@ -1,0 +1,28 @@
+.install-page{
+  height: 100vh;
+  width: 100vw;
+}
+.install-box{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 800px;
+}
+.invalid-feedback{
+  margin-left: 25%;
+}
+.terminal{
+  max-height:500px;
+  overflow:scroll;
+  display:flex;
+  flex-direction:column-reverse;
+  background-color:#30353A;
+  color:#FAFAFA;
+  font-family:monospace;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.terminal::-webkit-scrollbar {
+  display: none;
+}

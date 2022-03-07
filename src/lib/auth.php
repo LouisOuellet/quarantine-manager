@@ -1,0 +1,52 @@
+<?php
+
+// Import Librairies
+require_once dirname(__FILE__,3) . '/src/lib/imap.php';
+require_once dirname(__FILE__,3) . '/src/lib/smtp.php';
+
+class Auth{
+
+  public $SMTP = null;
+  public $IMAP = null;
+  public $Settings = [];
+
+  public function __construct($settings = []){
+    if(!empty($settings)){ $this->Settings = $settings; }
+    if(isset($this->Settings['imap'])){
+      $this->IMAP = new PHPIMAP($this->Settings['imap']['host'],$this->Settings['imap']['encryption'],$this->Settings['imap']['port'],$this->Settings['imap']['username'],$this->Settings['imap']['password']);
+    } else { $this->IMAP = new PHPIMAP(); }
+    if(isset($this->Settings['smtp'])){
+      $this->SMTP = new MAIL($this->Settings['smtp'],$this->Fields);
+    } else { $this->SMTP = new MAIL(); }
+  }
+
+  public function try($username, $password){
+    if((session_status() == PHP_SESSION_ACTIVE)&&(isset($_SESSION['quarantine-username']))){} else {
+      if(!isset($_COOKIE['quarantine-username'])){
+        if($this->IMAP->login($username,$password,$this->Settings['imap']['host'],$this->Settings['imap']['port'],$this->Settings['imap']['encryption'])){
+          $_SESSION['quarantine-username'] = $username;
+          // setcookie('quarantine-username', $username, time() + (86400 * 30), "/");
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        $_SESSION['quarantine-username'] = $_COOKIE['quarantine-username'];
+      }
+    }
+  }
+
+  public function login($username, $password, $type = "imap", $settings = []){
+    if($type == "imap"){
+      if(empty($settings) && !empty($this->Settings)){ $settings = $this->Settings['imap']; }
+      if(isset($settings['host'],$settings['port'],$settings['encryption'])){
+        return $this->IMAP->login($username,$password,$settings['host'],$settings['port'],$settings['encryption']);
+      } else { return false; }
+    } elseif($type == "smtp"){
+      if(empty($settings) && !empty($this->Settings)){ $settings = $this->Settings['smtp']; }
+      if(isset($settings['host'],$settings['port'],$settings['encryption'])){
+        return $this->SMTP->login($username,$password,$settings['host'],$settings['port'],$settings['encryption']);
+      } else { return false; }
+    } else { return false; }
+  }
+}
