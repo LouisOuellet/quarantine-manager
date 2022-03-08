@@ -237,10 +237,21 @@ div.sidebar .fw-semibold { font-weight: 600; }
 div.sidebar .lh-tight { line-height: 1.25; }
 div.content {
   width: -webkit-fill-available;
-  width: calc(100vw - 84px);
-  max-width: calc(100vw - 84px);
-  padding-left: 12px;
-  transform: translateZ(-25px);
+  width: calc(100vw - 72px);
+  max-width: calc(100vw - 72px);
+  /* padding-left: 12px; */
+}
+div.dashboard {
+  height: -webkit-fill-available;
+  height: 100vw;
+  max-height: 100vw;
+  width: -webkit-fill-available;
+  width: calc(100vw - 72px);
+  max-width: calc(100vw - 72px);
+  overflow-y: scroll;
+}
+div.dashboard .row {
+  margin: 0px;
 }
 div.dashboard .row.header div {
   font-size:18px;
@@ -255,3 +266,4 @@ div.dashboard .row.search div div.input-group > * {
 div.dashboard .row.line .button-group > * {
   border-radius: 0px !important;
 }
+81

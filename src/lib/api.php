@@ -150,44 +150,36 @@ class API{
     // Check Connection Status
     if($this->Auth->IMAP->isConnected()){
       // Retrieve INBOX
-      $inbox = $this->Auth->IMAP->get();
+      $inbox = $this->Auth->IMAP->search('TO "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
       // Init Messages
       $messages = [];
       // Output ids and subject of all messages retrieved
       foreach($inbox->messages as $msg){
-        $continue = false;
-        if($to != null){
-          foreach($msg->Receiver as $receiver){
-            if($to == $receiver){ $continue = true; break; }
-          }
-        } else { $continue = true; }
-        if($continue){
-          $uid=str_replace(['>','<'],['',''],$msg->UID);
-          $messages[$uid] = [
-            "uid" => $uid,
-            "sender" => $msg->From,
-            "subject" => $msg->Subject->Full,
-            "body" => $msg->Body->Content,
-            "date" => $msg->Date,
-            "attachments" => []
-          ];
-          foreach($msg->Attachments->Files as $file){
-            if(isset($file["name"])){
-              $filename = explode('.',$file["name"]);
-              $type = end($filename);
-              $name = $filename[0];
-            } else { $file["name"] = null; }
-            if(isset($file["filename"])){
-              $filename = explode('.',$file["filename"]);
-              $type = end($filename);
-              $name = $filename[0];
-            } else { $file["filename"] = null; }
-            array_push($messages[$uid]['attachments'],[
-              "name" => $name,
-              "type" => $type,
-              "size" => $file["bytes"],
-            ]);
-          }
+        $uid=str_replace(['>','<'],['',''],$msg->UID);
+        $messages[$uid] = [
+          "uid" => $uid,
+          "sender" => $msg->From,
+          "subject" => $msg->Subject->Full,
+          "body" => $msg->Body->Content,
+          "date" => date('Y-m-d H:i:s',strtotime($msg->Date)),
+          "attachments" => []
+        ];
+        foreach($msg->Attachments->Files as $file){
+          if(isset($file["name"])){
+            $filename = explode('.',$file["name"]);
+            $type = end($filename);
+            $name = $filename[0];
+          } else { $file["name"] = null; }
+          if(isset($file["filename"])){
+            $filename = explode('.',$file["filename"]);
+            $type = end($filename);
+            $name = $filename[0];
+          } else { $file["filename"] = null; }
+          array_push($messages[$uid]['attachments'],[
+            "name" => $name,
+            "type" => $type,
+            "size" => $file["bytes"],
+          ]);
         }
       }
       return [

@@ -59,6 +59,173 @@ class PHPIMAP{
 		if(!imap_open($connection, $username, $password)){ return false; } else { return true; }
 	}
 
+	public function search($criteria, $folder = "INBOX", $opt = []){
+		if(is_array($folder)){ $opt = $folder;$folder = "INBOX"; }
+		if($this->isConnected()){
+			// Init Return
+			$return = new stdClass();
+			// Connect to Folder
+			if(in_array($folder, $this->Folders) && $IMAP = imap_open($this->Connection.$folder, $this->Username, $this->Password)){
+				// Building Meta Data
+				$return->Meta = imap_check($IMAP);
+				$ids = imap_search($IMAP, $criteria);
+				$return->messages = [];
+				if(!empty($ids)){
+					foreach($ids as $id){
+						// Handling Meta Data
+						$msg = imap_headerinfo($IMAP,$id);
+						$msg->ID = $id;
+						$msg->UID = imap_uid($IMAP,$id);
+						$msg->Header = imap_headerinfo($IMAP,$id);
+						$msg->Date = $msg->Header->date;
+						$msg->From = $msg->Header->from[0]->mailbox . "@" . $msg->Header->from[0]->host;
+						$msg->Sender = $msg->Header->sender[0]->mailbox . "@" . $msg->Header->sender[0]->host;
+						$msg->Receiver = [];
+						$msg->To = [];
+						if(isset($msg->Header->to)){
+							foreach($msg->Header->to as $to){
+								if(property_exists($to, 'host') && property_exists($to, 'mailbox')){
+									array_push($msg->To,$to->mailbox . "@" . $to->host);
+									array_push($msg->Receiver,$to->mailbox . "@" . $to->host);
+								}
+							}
+						} else { array_push($msg->To,$this->Username); }
+						$msg->CC = [];
+						if(isset($msg->Header->cc)){
+							foreach($msg->Header->cc as $cc){
+								if(property_exists($cc, 'host') && property_exists($cc, 'mailbox')){
+									array_push($msg->CC,$cc->mailbox . "@" . $cc->host);
+									array_push($msg->Receiver,$cc->mailbox . "@" . $cc->host);
+								}
+							}
+						}
+						$msg->BCC = [];
+						if(isset($msg->Header->bcc)){
+							foreach($msg->Header->bcc as $bcc){
+								if(property_exists($bcc, 'host') && property_exists($bcc, 'mailbox')){
+									array_push($msg->BCC,$bcc->mailbox . "@" . $bcc->host);
+									array_push($msg->Receiver,$bcc->mailbox . "@" . $bcc->host);
+								}
+							}
+						}
+						// Handling Subject Line
+						if(isset($msg->subject)){$sub = $msg->subject;}
+						if(isset($msg->Subject)){$sub = $msg->Subject;}
+						$sub = imap_utf8($sub);
+						$msg->Subject = new stdClass();
+						$msg->Subject->Full = str_replace('~','-',$sub);
+						$msg->Subject->PLAIN = trim(preg_replace("/Re\:|re\:|RE\:|Fwd\:|fwd\:|FWD\:/i", '', $msg->Subject->Full),' ');
+						$msg->Subject->Meta = [];
+						$meta = $msg->Subject->PLAIN;
+						$replace = ['---','--','CID:','UTF-8','(',')','<','>','{','}','[',']',';','"',"'",'_','=','~','+','!','?','@','$','%','^','&','*','\\','/','|'];
+				    foreach($replace as $str1){ $meta = str_replace($str1,' ',strtoupper($meta)); }
+						foreach(explode(' ',$meta) as $string){
+            	if(mb_strlen($string)>=3 && (preg_match('~[0-9]+~', $string) || strpos($string, '-') !== false) && substr($string, 0, 1) !== '=' && substr($string, 0, 1) !== '?'){ array_push($msg->Subject->Meta,$string);}
+            }
+						// Handling Body
+						$msg->Body = new stdClass();
+						$msg->Body->Meta = imap_fetchstructure($IMAP,$id);
+						$msg->Body->Content = $this->getBody($IMAP,$msg->UID);
+						if($this->isHTML($msg->Body->Content)){
+							$htmlBody = $this->convertHTMLSymbols($msg->Body->Content);
+							$html = new DOMDocument();
+							libxml_use_internal_errors(true);
+							$html->loadHTML($htmlBody);
+							libxml_use_internal_errors(false);
+							$this->removeElementsByTagName('script', $html);
+							$this->removeElementsByTagName('style', $html);
+							$this->removeElementsByTagName('head', $html);
+							$body = $html->getElementsByTagName('body');
+							if( $body && 0<$body->length ){
+						    $msg->Body->Content = $html->saveHtml($body->item(0));
+							} else {
+								$msg->Body->Content = $html->saveHtml($html);
+							}
+							$msg->Body->Unquoted = $this->convertHTMLSymbols($msg->Body->Content);
+							if(strpos($msg->Body->Unquoted, 'From:') !== false){
+								$msg->Body->Unquoted = explode('From:',$msg->Body->Unquoted)[0];
+								$msg->Body->Unquoted = str_replace("From:","",$msg->Body->Unquoted);
+							}
+							if(strpos($msg->Body->Unquoted, 'Wrote:') !== false){
+								$msg->Body->Unquoted = explode('Wrote:',$msg->Body->Unquoted)[0];
+								$msg->Body->Unquoted = str_replace("Wrote:","",$msg->Body->Unquoted);
+							}
+							if(strpos($msg->Body->Unquoted, '------ Original Message ------') !== false){
+								$msg->Body->Unquoted = explode('------ Original Message ------',$msg->Body->Unquoted)[0];
+								$msg->Body->Unquoted = str_replace("------ Original Message ------","",$msg->Body->Unquoted);
+							}
+							if(strpos($msg->Body->Unquoted, '------ Forwarded Message ------') !== false){
+								$msg->Body->Unquoted = explode('------ Forwarded Message ------',$msg->Body->Unquoted)[0];
+								$msg->Body->Unquoted = str_replace("------ Forwarded Message ------","",$msg->Body->Unquoted);
+							}
+							$html = new DOMDocument();
+							libxml_use_internal_errors(true);
+							$html->loadHTML($msg->Body->Unquoted);
+							libxml_use_internal_errors(false);
+							$this->removeElementsByTagName('blockquote', $html);
+							$body = $html->getElementsByTagName('body');
+							if( $body && 0<$body->length ){
+								$msg->Body->Unquoted = $html->saveHtml($body->item(0));
+							} else {
+								$msg->Body->Unquoted = $html->saveHtml($html);
+							}
+						} else {
+							$msg->Body->Unquoted = "";
+							foreach(explode("\n",$msg->Body->Content) as $line){
+								if(substr($line, 0, 1) != '>'){ $msg->Body->Unquoted .= $line."\n"; }
+							}
+						}
+						// Handling Attachments
+						$msg->Attachments = new stdClass();
+						$msg->Attachments->Files = [];
+						$parts = [];
+						if(isset($msg->Body->Meta->parts) && is_array($msg->Body->Meta->parts) && count($msg->Body->Meta->parts) > 0){
+							$parts = $this->createPartArray($msg->Body->Meta);
+							$msg->Attachments->Count = 0;
+							foreach($parts as $key => $objects){
+								$part = $objects['part_object'];
+								if($part->ifdparameters){
+									foreach($part->dparameters as $object){
+										if(strtolower($object->attribute) == 'filename'){
+											$msg->Attachments->Files[$key]['filename'] = $object->value;
+											$msg->Attachments->Files[$key]['is_attachment'] = true;
+										}
+									}
+								}
+								if($part->ifparameters){
+									foreach($part->parameters as $object){
+										if(strtolower($object->attribute) == 'name'){
+											$msg->Attachments->Files[$key]['name'] = $object->value;
+											$msg->Attachments->Files[$key]['is_attachment'] = true;
+										}
+									}
+								}
+								if((isset($msg->Attachments->Files[$key]))&&($msg->Attachments->Files[$key]['is_attachment'])){
+									$msg->Attachments->Count++;
+									$msg->Attachments->Files[$key]['attachment'] = imap_fetchbody($IMAP,$id, $objects['part_number']);
+									$msg->Attachments->Files[$key]['encoding'] = $part->encoding;
+									if(isset($part->bytes)){$msg->Attachments->Files[$key]['bytes'] = $part->bytes;}
+		              if($part->encoding == 3){
+		                $msg->Attachments->Files[$key]['attachment'] = base64_decode($msg->Attachments->Files[$key]['attachment']);
+		              } elseif($part->encoding == 4){
+		                $msg->Attachments->Files[$key]['attachment'] = quoted_printable_decode($msg->Attachments->Files[$key]['attachment']);
+		              }
+								}
+							}
+						}
+						$return->messages[$msg->ID] = $msg;
+						// Resetting Flag
+						if(isset($opt["new"]) && is_bool($opt["new"]) && $opt["new"]){ imap_clearflag_full($IMAP,$id, "\\Seen"); }
+					}
+				}
+				// Close IMAP Connection
+				imap_close($IMAP);
+				// Return
+				return $return;
+			} else { return end(imap_errors()); }
+		} else { return $this->Status; }
+	}
+
 	public function get($folder = "INBOX", $opt = []){
 		if(is_array($folder)){ $opt = $folder;$folder = "INBOX"; }
 		if($this->isConnected()){
