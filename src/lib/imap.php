@@ -18,7 +18,7 @@ class PHPIMAP{
 
     // Increase PHP memory limit
     ini_set('memory_limit', '2G');
-    ini_set('max_execution_time','2400');
+    ini_set('max_execution_time',0);
 
 		// Save Configuration
 		$this->Host = $Host;
@@ -85,19 +85,36 @@ class PHPIMAP{
 						$msg->ID = $id;
 						$msg->UID = imap_uid($IMAP,$id);
 						$msg->Header = imap_headerinfo($IMAP,$id);
+						$msg->Date = $msg->Header->date;
 						$msg->From = $msg->Header->from[0]->mailbox . "@" . $msg->Header->from[0]->host;
 						$msg->Sender = $msg->Header->sender[0]->mailbox . "@" . $msg->Header->sender[0]->host;
+						$msg->Receiver = [];
 						$msg->To = [];
 						if(isset($msg->Header->to)){
-							foreach($msg->Header->to as $to){ array_push($msg->To,$to->mailbox . "@" . $to->host); }
+							foreach($msg->Header->to as $to){
+								if(property_exists($to, 'host') && property_exists($to, 'mailbox')){
+									array_push($msg->To,$to->mailbox . "@" . $to->host);
+									array_push($msg->Receiver,$to->mailbox . "@" . $to->host);
+								}
+							}
 						} else { array_push($msg->To,$this->Username); }
 						$msg->CC = [];
 						if(isset($msg->Header->cc)){
-							foreach($msg->Header->cc as $cc){ array_push($msg->CC,$cc->mailbox . "@" . $cc->host); }
+							foreach($msg->Header->cc as $cc){
+								if(property_exists($cc, 'host') && property_exists($cc, 'mailbox')){
+									array_push($msg->CC,$cc->mailbox . "@" . $cc->host);
+									array_push($msg->Receiver,$cc->mailbox . "@" . $cc->host);
+								}
+							}
 						}
 						$msg->BCC = [];
 						if(isset($msg->Header->bcc)){
-							foreach($msg->Header->bcc as $bcc){ array_push($msg->BCC,$bcc->mailbox . "@" . $bcc->host); }
+							foreach($msg->Header->bcc as $bcc){
+								if(property_exists($bcc, 'host') && property_exists($bcc, 'mailbox')){
+									array_push($msg->BCC,$bcc->mailbox . "@" . $bcc->host);
+									array_push($msg->Receiver,$bcc->mailbox . "@" . $bcc->host);
+								}
+							}
 						}
 						// Handling Subject Line
 						if(isset($msg->subject)){$sub = $msg->subject;}

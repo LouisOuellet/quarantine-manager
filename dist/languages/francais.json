@@ -30,5 +30,16 @@
     "None": "Aucune",
     "Port": "Port",
     "Username": "Nom d'utilisateur",
-    "Quarantine": "Quarantaine"
+    "Quarantine": "Quarantaine",
+    "Dashboard": "Tableau de bord",
+    "Initialized": "Initialisé",
+    "Sign out": "Déconnexion",
+    "Settings": "Paramètres",
+    "Profile": "Profil",
+    "Unknown request": "Demande inconnue",
+    "No request": "Aucune demande",
+    "Not logged in": "Non connecté",
+    "Server under maintenance": "Serveur en maintenance",
+    "Logged out": "Déconnecté",
+    "Unable to logout": "Impossible de se déconnecter"
 }

@@ -8,12 +8,14 @@ class Auth{
 
   public $SMTP = null;
   public $IMAP = null;
-  public $Settings = [];
+  protected $Settings = [];
+  protected $Fields = [];
 
-  public function __construct($settings = []){
+  public function __construct($settings = [],$fields = []){
     if(!empty($settings)){ $this->Settings = $settings; }
+    if(!empty($fields)){ $this->Fields = $fields; }
     if(isset($this->Settings['imap'])){
-      $this->IMAP = new PHPIMAP($this->Settings['imap']['host'],$this->Settings['imap']['encryption'],$this->Settings['imap']['port'],$this->Settings['imap']['username'],$this->Settings['imap']['password']);
+      $this->IMAP = new PHPIMAP($this->Settings['imap']['host'],$this->Settings['imap']['port'],$this->Settings['imap']['encryption'],$this->Settings['imap']['username'],$this->Settings['imap']['password']);
     } else { $this->IMAP = new PHPIMAP(); }
     if(isset($this->Settings['smtp'])){
       $this->SMTP = new MAIL($this->Settings['smtp'],$this->Fields);
@@ -28,6 +30,7 @@ class Auth{
       if(!isset($_COOKIE['quarantine-username'])){
         if($this->IMAP->login($username,$password,$this->Settings['imap']['host'],$this->Settings['imap']['port'],$this->Settings['imap']['encryption'])){
           $_SESSION['quarantine-username'] = $username;
+          $_SESSION['quarantine-password'] = $password;
           // setcookie('quarantine-username', $username, time() + (86400 * 30), "/");
           return true;
         } else {
@@ -35,6 +38,7 @@ class Auth{
         }
       } else {
         $_SESSION['quarantine-username'] = $_COOKIE['quarantine-username'];
+        $_SESSION['quarantine-password'] = $_COOKIE['quarantine-password'];
       }
     }
   }

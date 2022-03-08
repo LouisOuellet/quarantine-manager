@@ -1,80 +1,95 @@
 <?php
 session_start();
 
-// Import API
+// Import Librairies
 require_once dirname(__FILE__).'/src/lib/api.php';
+require_once dirname(__FILE__).'/src/lib/url.php';
+
+$URL = new URLparser();
 
 if(!empty($_POST)){
+	// Decoding
+	foreach($_POST as $key => $value){ $_POST[$key] = $URL->decode($value); }
+	// Parse
+	foreach($_POST as $key => $value){ $_POST[$key] = $URL->parse($value); }
 	if(isset($_POST['request'])){
+		$trigger = $_POST['request'];
+		// Import API
+		$request = 'API';
 
 		// Start API
-		$API = new API();
+		if(class_exists($request)){ $API = new $request(); }
+		else {
+			$return = [
+				"error" => $API->Fields["Unknown API"],
+				"api" => [
+					"name" => $trigger,
+					"class" => $request,
+					"file" => $file,
+				],
+				"code" => 404,
+			];
+		}
 
-		// Maintenance Verification
-		if((!isset($API->Settings['maintenance']))||(!$API->Settings['maintenance'])){
-
-			// Initialize Data
-			if(isset($_POST['data'])){
-				if($API->isJson($_POST['data'])){ $data = json_decode($decodedURI, true); }
-				else { $data = json_decode(urldecode(base64_decode($_POST['data'])), true); }
-			} else { $data = []; }
-
-			// Handling API Request
-			if(isset($_POST['method'])){
-				$method = $_POST['method'];
-				switch($method){
-					case"send":
-						if(property_exists($API,'Mail') && method_exists($API->Mail,$method)){
-							if(isset($data['extra'])){$API->Mail->send($data['email'],$data['message'],$data['extra']);}
-							else{$API->Mail->send($data['email'],$data['message']);}
-							$return = ["success" => $API->Fields["Message Sent"]];
-						}
-						else {
-							$return = [
-								"error" => $API->Fields["Unable to send your message"],
-								"request" => $_POST,
-								"api" => [
-									"method" => $method,
-								],
-								"code" => 404,
-							];
-						}
-						break;
-					default:
+		if(!isset($return)){
+			// Maintenance Verification
+			if((!isset($API->Settings['maintenance']))||(!$API->Settings['maintenance'])){
+				// Check Login
+				if($API->isLogin()){
+					// Initialize Data
+					if(isset($_POST['data'])){ $data = $_POST['data']; } else { $data = []; }
+					// Handling API Request
+					if(isset($_POST['type'])){
+						$method = $_POST['type'];
 						if(method_exists($API,$method)){ $return = $API->$method($data); }
 						else {
 							$return = [
-								"error" => $API->Fields["Unknown Method"],
-								"request" => $_POST,
+								"error" => $API->Fields["Unknown request"],
 								"api" => [
-									"method" => $method,
+									"name" => $trigger,
+									"class" => $request,
+									"file" => $file,
 								],
 								"code" => 404,
 							];
 						}
-						break;
+					} else {
+						$return = [
+							"error" => $API->Fields["No request"],
+							"api" => [
+								"name" => $trigger,
+								"class" => $request,
+								"file" => $file,
+							],
+							"code" => 404,
+						];
+					}
+				} else {
+					$return = [
+						"error" => $API->Fields["Not logged in"],
+						"api" => [
+							"name" => $trigger,
+							"class" => $request,
+							"file" => $file,
+						],
+						"code" => 403,
+					];
 				}
 			} else {
 				$return = [
-					"error" => $API->Fields["Unknown Request"],
-					"request" => $_POST,
+					"error" => $API->Fields["Server under maintenance"],
 					"api" => [
-						"method" => $method,
+						"name" => $trigger,
+						"class" => $request,
+						"file" => $file,
 					],
-					"code" => 404,
+					"code" => 500,
 				];
 			}
-		} else {
-			$return = [
-				"error" => $API->Fields["Server Under Maintenance"],
-				"request" => $_POST,
-				"api" => [
-					"method" => $method,
-				],
-				"code" => 500,
-			];
 		}
-		// Encoded JSON Response
-		echo base64_encode(urlencode(json_encode($return, JSON_PRETTY_PRINT)));
+		// Encode and Print
+		$return['request'] = $_POST;
+		$encoding = $URL->encode($return);
+		echo $encoding;
 	}
 }
