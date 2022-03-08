@@ -116,4 +116,8 @@ class API{
   public function isLogin(){
     if((session_status() == PHP_SESSION_ACTIVE)&&(isset($_SESSION['quarantine-username']))){ return true; } else { return false; }
   }
+
+  public function logout(){
+    session_destroy();
+  }
 }

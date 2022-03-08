@@ -30,8 +30,8 @@
   <!-- iCheck for checkboxes and radio inputs -->
   <link rel="stylesheet" href="./vendor/icheck-bootstrap/icheck-bootstrap.min.css">
   <!-- Select2 -->
-  <link rel="stylesheet" href="./vendor/select2/css/select2.min.css">
-  <link rel="stylesheet" href="./vendor/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <link rel="stylesheet" href="./vendor/select2-4.0.13/dist/css/select2.min.css">
+  <link rel="stylesheet" href="./vendor/select2-bootstrap-5-theme-1.2.0/dist/select2-bootstrap-5-theme.min.css">
   <!-- Google Font: Source Sans Pro -->
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- DataTables -->
@@ -65,16 +65,6 @@
   <link rel="stylesheet" href="./vendor/toastr/toastr.min.css">
   <!-- Core CSS -->
   <link href="/dist/css/stylesheet.css" rel="stylesheet">
-
-
-
-
-
-
-
-
-
-
   <!-- jQuery -->
   <script src="/vendor/jquery/jquery.min.js"></script>
   <!-- Bootstrap 5 -->
@@ -105,7 +95,7 @@
   <script src="./vendor/datatables-buttons/buttons.print.min.js"></script>
   <script src="./vendor/datatables-select/dataTables.select.min.js"></script>
   <!-- Select2 -->
-  <script src="./vendor/select2/js/select2.full.min.js"></script>
+  <script src="./vendor/select2-4.0.13/dist/js/select2.full.min.js"></script>
   <!-- Bootstrap4 Duallistbox -->
   <script src="./vendor/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js"></script>
   <!-- InputMask -->

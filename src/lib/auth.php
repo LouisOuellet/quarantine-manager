@@ -18,6 +18,9 @@ class Auth{
     if(isset($this->Settings['smtp'])){
       $this->SMTP = new MAIL($this->Settings['smtp'],$this->Fields);
     } else { $this->SMTP = new MAIL(); }
+    if(!isset($_SESSION['quarantine-username']) && isset($_POST['signin'],$_POST['username'],$_POST['password'])){
+      $this->try($_POST['username'],$_POST['password']);
+    }
   }
 
   public function try($username, $password){

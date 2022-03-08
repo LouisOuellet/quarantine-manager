@@ -1,6 +1,5 @@
 {
     "Sign in": "Sign in",
-    "Sign In": "Sign In",
     "Maintenance": "Maintenance",
     "Installation": "Installation",
     "Message Sent": "Message Sent",
@@ -30,5 +29,6 @@
     "STARTTLS": "STARTTLS",
     "None": "None",
     "Port": "Port",
-    "Username": "Username"
+    "Username": "Username",
+    "Quarantine": "Quarantine"
 }

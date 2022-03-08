@@ -1,6 +1,5 @@
 {
     "Sign in": "Connexion",
-    "Sign In": "Connexion",
     "Maintenance": "Maintenance",
     "Installation": "Installation",
     "Message Sent": "Message Envoyé",
@@ -20,7 +19,7 @@
     "I have read this License": "J'ai lu cette license",
     "Review Configuration": "Revision de la Configuration",
     "Language": "Langue",
-    "Password": "Password",
+    "Password": "Mot de passe",
     "Installation Details": "Details d'Installation",
     "SMTP": "SMTP",
     "IMAP": "IMAP",
@@ -30,5 +29,6 @@
     "STARTTLS": "STARTTLS",
     "None": "Aucune",
     "Port": "Port",
-    "Username": "Username"
+    "Username": "Nom d'utilisateur",
+    "Quarantine": "Quarantaine"
 }
