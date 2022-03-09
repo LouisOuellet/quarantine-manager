@@ -31,7 +31,7 @@ $(function(){
   function checkProgress(){
     var checkInstall = setInterval(function(){
       $.ajax({
-        url : "/tmp/resume.install",
+        url : "./tmp/resume.install",
         dataType:"text",
         success:function(data){
           clearInterval(checkInstall);
@@ -61,7 +61,7 @@ $(function(){
           setProgress(now);
           var checkLog = setInterval(function(){
             $.ajax({
-              url : "/tmp/install.log",
+              url : "./tmp/install.log",
               dataType:"text",
               success:function(data){
                 $('#log-container').html(data.replace(/\n/g, "<br>"));
@@ -128,7 +128,7 @@ $(function(){
       // AJAX code to submit form.
       $.ajax({
         type: "POST",
-        url: "/src/lib/install.php",
+        url: "./src/lib/install.php",
         data: {
           language: document.getElementById("language").value,
           timezone: document.getElementById("timezone").value,
