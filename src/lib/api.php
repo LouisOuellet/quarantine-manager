@@ -10,12 +10,11 @@ class API{
   protected $Language = 'english';
   protected $Languages = [];
   protected $Fields = [];
-  protected $Mail;
   protected $Timezones;
-  protected $DB;
   protected $PHPVersion;
   protected $Protocol;
   protected $Domain;
+  protected $URL;
   protected $Auth;
   protected $Debug = true;
 
@@ -45,10 +44,9 @@ class API{
     if($this->Debug){ error_reporting(-1); } else { error_reporting(0); }
 
     // Setup URL
-		if(isset($_SERVER['HTTP_HOST']) && !isset($this->Settings['url'])){
-			$this->Settings['url'] = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://";
-			$this->Settings['url'] .= $_SERVER['HTTP_HOST'].'/';
-      if(file_exists(dirname(__FILE__,3).'/config/config.json')){ $this->set($this->Settings); }
+		if(isset($_SERVER['HTTP_HOST'])){
+			$this->URL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://";
+			$this->URL .= $_SERVER['HTTP_HOST'].'/';
 		}
 
 		//Import Listings
@@ -68,17 +66,18 @@ class API{
     $this->Auth = new Auth($this->Settings,$this->Fields);
 
     // Customize SMTP template
-    if(isset($this->Settings['url'],$this->Settings['smtp'],$this->Settings['smtp']['username'],$this->Settings['smtp']['password'],$this->Settings['smtp']['host'],$this->Settings['smtp']['port'],$this->Settings['smtp']['encryption'])){
-      $this->Mail = new MAIL($this->Settings['smtp'],$this->Fields);
-      $customization = [
-        "logo" => $this->Settings['url']."dist/img/logo.png",
-        "support" => $this->Settings['url']."?p=support",
-        "trademark" => $this->Settings['url']."?p=trademark",
-        "policy" => $this->Settings['url']."?p=policy"
+    if(isset($this->Settings['smtp'],$this->Settings['smtp']['username'],$this->Settings['smtp']['password'],$this->Settings['smtp']['host'],$this->Settings['smtp']['port'],$this->Settings['smtp']['encryption'])){
+      $links = [
+        "support" => "https://github.com/LouisOuellet/quarantine-manager",
+        "trademark" => "#",
+        "policy" => "#",
+        "logo" => $this->URL."dist/img/logo.png"
       ];
-      if(is_file(dirname(__FILE__,3).'/dist/img/custom-logo.png')){ $customization['logo'] = $this->Settings['url']."dist/img/custom-logo.png"; }
-      $this->Mail->Customization('Quarantine',$customization);
+      $this->Auth->SMTP->customization("Quarantine",$links);
     }
+
+    // Init tmp
+    $this->mkdir('tmp');
   }
 
   protected function mkdir($directory){
@@ -146,42 +145,163 @@ class API{
     }
   }
 
+  protected function formatMsgs($messages = []){
+    // Init Messages
+    $results = [];
+    // Retrieve Information
+    foreach($messages as $msg){
+      $uid=str_replace(['>','<'],['',''],$msg->UID);
+      $results[$uid] = [
+        "uid" => $uid,
+        "sender" => $msg->From,
+        "subject" => $msg->Subject->Full,
+        "body" => $msg->Body->Content,
+        "date" => date('Y-m-d H:i:s',strtotime($msg->Date)),
+        "attachments" => []
+      ];
+      foreach($msg->Attachments->Files as $file){
+        if(isset($file["name"])){
+          $filename = explode('.',$file["name"]);
+          $type = end($filename);
+          $name = $filename[0];
+        } else { $file["name"] = null; }
+        if(isset($file["filename"])){
+          $filename = explode('.',$file["filename"]);
+          $type = end($filename);
+          $name = $filename[0];
+        } else { $file["filename"] = null; }
+        array_push($results[$uid]['attachments'],[
+          "name" => $name,
+          "type" => $type,
+          "size" => $file["bytes"],
+        ]);
+      }
+    }
+    return $results;
+  }
+
+  public function delete($uid = null){
+    if($this->isLogin()){
+      if($uid != null){
+        if($this->Auth->IMAP->isConnected()){
+          if($this->Auth->IMAP->delete($uid)){
+            return [
+              "success" => $this->Fields['Message deleted'],
+              "output" => [
+                "uid" => $uid,
+              ],
+            ];
+          } else {
+            return [
+              "error" => $this->Fields['Unable to delete messages'],
+              "output" => [],
+            ];
+          }
+        } else {
+          return [
+            "error" => $this->Fields['Unable to connect to SMTP server'],
+            "output" => [],
+          ];
+        }
+      } else {
+        return [
+          "error" => $this->Fields['Unable to identify the message'],
+          "output" => [],
+        ];
+      }
+    } else {
+      return [
+        "error" => $this->Fields['You are not logged in'],
+        "output" => [],
+      ];
+    }
+  }
+
+  public function restore($uid = null){
+  // file_put_contents('/your/file/here.eml', $headers . "\n" . $body);
+    if($this->isLogin()){
+      if($uid != null){
+        if($this->Auth->IMAP->isConnected()){
+          if($eml = $this->Auth->IMAP->saveEml($uid)){
+            $file = dirname(__FILE__,3).'/tmp/'.$uid.'.eml';
+            if(file_exists($file)){ unlink( $file); }
+            file_put_contents($file, $eml);
+            $body = "This email was found in quarantine and restored.\nBeware of the content. This email was quarantined for a reason.";
+            $options = [
+              'from' => $this->Settings['imap']['username'],
+              'subject' => "Quarantined message ID=$uid restored",
+              'attachments' => [$file],
+            ];
+            if($this->Auth->SMTP->isConnected()){
+              if($this->Auth->SMTP->send($_SESSION['quarantine-username'], $body, $options)){
+                if($this->Auth->IMAP->delete($uid)){
+                  unlink($file);
+                  return [
+                    "success" => $this->Fields['Message restored'],
+                    "output" => [
+                      "uid" => $uid,
+                    ],
+                  ];
+                } else {
+                  return [
+                    "error" => $this->Fields['Unable to remove the restored message'],
+                    "output" => [],
+                  ];
+                }
+              } else {
+                return [
+                  "error" => $this->Fields['Unable to send the restored message'],
+                  "output" => [],
+                ];
+              }
+            } else {
+              return [
+                "error" => $this->Fields['Unable to connect to SMTP server'],
+                "output" => [],
+              ];
+            }
+          } else {
+            return [
+              "error" => $this->Fields['Unable to restore messages'],
+              "output" => [],
+            ];
+          }
+        } else {
+          return [
+            "error" => $this->Fields['Unable to connect to IMAP server'],
+            "output" => [],
+          ];
+        }
+      } else {
+        return [
+          "error" => $this->Fields['Unable to identify the message'],
+          "output" => [],
+        ];
+      }
+    } else {
+      return [
+        "error" => $this->Fields['You are not logged in'],
+        "output" => [],
+      ];
+    }
+  }
+
   public function retrieve($to = null){
     // Check Connection Status
     if($this->Auth->IMAP->isConnected()){
-      // Retrieve INBOX
-      $inbox = $this->Auth->IMAP->search('TO "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
       // Init Messages
       $messages = [];
-      // Output ids and subject of all messages retrieved
-      foreach($inbox->messages as $msg){
-        $uid=str_replace(['>','<'],['',''],$msg->UID);
-        $messages[$uid] = [
-          "uid" => $uid,
-          "sender" => $msg->From,
-          "subject" => $msg->Subject->Full,
-          "body" => $msg->Body->Content,
-          "date" => date('Y-m-d H:i:s',strtotime($msg->Date)),
-          "attachments" => []
-        ];
-        foreach($msg->Attachments->Files as $file){
-          if(isset($file["name"])){
-            $filename = explode('.',$file["name"]);
-            $type = end($filename);
-            $name = $filename[0];
-          } else { $file["name"] = null; }
-          if(isset($file["filename"])){
-            $filename = explode('.',$file["filename"]);
-            $type = end($filename);
-            $name = $filename[0];
-          } else { $file["filename"] = null; }
-          array_push($messages[$uid]['attachments'],[
-            "name" => $name,
-            "type" => $type,
-            "size" => $file["bytes"],
-          ]);
-        }
-      }
+      // Retrieve ALL Related emails
+      // Retrieve TO
+      $inbox = $this->Auth->IMAP->search('TO "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+      // Retrieve CC
+      $inbox = $this->Auth->IMAP->search('CC "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+      // Retrieve BCC
+      $inbox = $this->Auth->IMAP->search('BCC "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+      // Return
       return [
         "success" => $this->Fields['Messages retrieved'],
         "output" => [
@@ -190,7 +310,7 @@ class API{
       ];
     } else {
       return [
-        "error" => $this->Fields['Unable to retrieve messages'],
+        "error" => $this->Fields['Unable to connect to IMAP server'],
         "output" => [
           "status" => $this->Auth->IMAP->isConnected(),
           "settings" => $this->Settings['imap'],

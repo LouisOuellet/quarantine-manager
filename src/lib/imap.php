@@ -11,7 +11,7 @@ class PHPIMAP{
 	protected $Password;
 	protected $Connection;
 
-	public $Status;
+	public $Status = false;
 	public $Folders = [];
 
 	public function __construct($Host = null,$Port = null,$Encryption = null,$Username = null,$Password = null,$isSelfSigned = true){
@@ -414,6 +414,21 @@ class PHPIMAP{
 		imap_close($IMAP);
 	}
 
+	public function saveEml($uid){
+		// Connect IMAP
+		error_reporting(0);
+		if($IMAP = imap_open($this->Connection, $this->Username, $this->Password)){
+			error_reporting(-1);
+			// Fetch Email
+			$headers = imap_fetchheader($IMAP, $uid, FT_UID);
+			$body = imap_body($IMAP, $uid, FT_UID);
+			// Close IMAP Connection
+			imap_close($IMAP);
+			// Return Blob
+			return $headers."\n".$body;
+		} else { error_reporting(-1);return false; }
+	}
+
 	public function delete($uid){
 		// Connect IMAP
 		error_reporting(0);
@@ -425,7 +440,8 @@ class PHPIMAP{
 			imap_expunge($IMAP);
 			// Close IMAP Connection
 			imap_close($IMAP);
-		} else { error_reporting(-1); }
+			return true;
+		} else { error_reporting(-1);return false; }
 	}
 
 	public function saveAttachment($file,$destination){

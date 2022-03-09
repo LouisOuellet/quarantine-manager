@@ -12,6 +12,7 @@ use PHPMailer\PHPMailer\SMTP;
 class MAIL{
 
 	public $Mailer; // Contains the PHPMailer Class
+	public $Status = false;
   protected $Language; // Contains the Language Class
 	protected $URL; // Contains the main URL
 	protected $Brand = "Mailer"; // Contains the brand name
@@ -33,7 +34,8 @@ class MAIL{
 		}
 
 		// Setup PHPMailer
-		if($smtp != null){
+		if($smtp != null && $this->login($smtp['username'],$smtp['password'],$smtp['host'],$smtp['port'],$smtp['encryption'])){
+			$this->Status = true;
 			$this->Mailer = new PHPMailer(true);
 			$this->Mailer->isSMTP();
 	    $this->Mailer->Host = $smtp['host'];
@@ -43,16 +45,27 @@ class MAIL{
 			$this->Mailer->SMTPDebug = false;
 			if($smtp['encryption'] == 'SSL'){ $this->Mailer->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; }
 			if($smtp['encryption'] == 'STARTTLS'){ $this->Mailer->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; }
+			$this->Mailer->SMTPOptions = [
+				'ssl' => [
+					'verify_peer' => false,
+					'verify_peer_name' => false,
+					'allow_self_signed' => true
+				]
+			];
 	    $this->Mailer->Port = $smtp['port'];
 		}
 	}
 
-	public function customization($brand = "Mailer",$links = [ "support" => "https://mailer.com/support", "trademark" => "https://mailer.com/trademark", "policy" => "https://mailer.com/policy", "logo" => "https://mailer.com/dist/img/logo.png", ]){
+	public function customization($brand = "Mailer",$links = [ "support" => "https://mailer.com/support", "trademark" => "https://mailer.com/trademark", "policy" => "https://mailer.com/policy", "logo" => "https://mailer.com/dist/img/logo.png" ]){
 		$this->Brand = $brand;
 		if(isset($links['support'])){ $this->Links['support'] = $links['support']; }
 		if(isset($links['trademark'])){ $this->Links['trademark'] = $links['trademark']; }
 		if(isset($links['policy'])){ $this->Links['policy'] = $links['policy']; }
 		if(isset($links['logo'])){ $this->Links['logo'] = $links['logo']; }
+	}
+
+	public function isConnected(){
+		return is_bool($this->Status) && $this->Status ? true:false;
 	}
 
 	public function login($username,$password,$host,$port,$encryption = null){
@@ -66,6 +79,13 @@ class MAIL{
 		$mail->SMTPDebug = false;
 		if($encryption == 'SSL'||$encryption == 'ssl'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; }
 		if($encryption == 'STARTTLS'||$encryption == 'starttls'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; }
+		$mail->SMTPOptions = [
+			'ssl' => [
+				'verify_peer' => false,
+				'verify_peer_name' => false,
+				'allow_self_signed' => true
+			]
+		];
 		$mail->Port = $port;
 		// Test Connection
 		try { $mail->SmtpConnect();$mail->smtpClose(); return true; }
@@ -90,6 +110,11 @@ class MAIL{
 		else { $this->Mailer->setFrom($this->Mailer->Username, $this->Brand); }
 		if(isset($extra['replyto'])){ $this->Mailer->addReplyTo($extra['replyto']); }
 		$this->Mailer->addAddress($email);
+		if((isset($extra['attachments']))&&(is_array($extra['attachments']))){
+			foreach($extra['attachments'] as $attachment){
+				$this->Mailer->addAttachment($attachment);
+			}
+		}
 		$this->Mailer->isHTML(true);
 		if(isset($extra['subject'])){ $this->Mailer->Subject = $extra['subject']; }
 		else { $this->Mailer->Subject = $this->Brand; }

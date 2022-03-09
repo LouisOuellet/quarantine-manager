@@ -6,8 +6,8 @@ require_once dirname(__FILE__,3) . '/src/lib/smtp.php';
 
 class Auth{
 
-  public $SMTP = null;
-  public $IMAP = null;
+  public $SMTP;
+  public $IMAP;
   protected $Settings = [];
   protected $Fields = [];
 

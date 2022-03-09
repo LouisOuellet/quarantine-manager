@@ -7,8 +7,6 @@
   })
 })()
 
-Dropzone.autoDiscover = false;
-
 var Engine = {
 	initiated:false,
 	loggedin:false,

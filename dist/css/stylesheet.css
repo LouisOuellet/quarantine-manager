@@ -146,6 +146,7 @@
 body {
   min-height: 100vh;
   min-height: -webkit-fill-available;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 }
 html {
   height: -webkit-fill-available;
@@ -161,13 +162,26 @@ main {
   max-width: 100vw;
   overflow-x: auto;
   overflow-y: auto;
-  background-color: #CCC;
+}
+.scrollarea {
+  overflow-y: auto;
+}
+.fw-semibold { font-weight: 600; }
+.lh-tight { line-height: 1.25; }
+.noselect {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 div.sidebar {
   width: 4.5rem;
   -moz-box-shadow: 5px 0px 10px rgba(0,0,0,0.5);
   -webkit-box-shadow: 5px 0px 10px rgba(0,0,0,0.5);
   box-shadow: 5px 0px 10px rgba(0,0,0,0.5);
+  color: #fff;
 }
 div.sidebar .dropdown-menu {
   width: 100vw;
@@ -179,6 +193,7 @@ div.sidebar .dropdown-item {
 div.sidebar .dropdown-toggle { outline: 0; }
 div.sidebar .nav-flush .nav-link {
   border-radius: 0;
+  color: #fff;
 }
 div.sidebar .bi {
   vertical-align: -.125em;
@@ -230,40 +245,31 @@ div.sidebar .btn-toggle-nav a:hover,
 div.sidebar .btn-toggle-nav a:focus {
   background-color: #d2f4ea;
 }
-div.sidebar .scrollarea {
-  overflow-y: auto;
-}
-div.sidebar .fw-semibold { font-weight: 600; }
-div.sidebar .lh-tight { line-height: 1.25; }
 div.content {
   width: -webkit-fill-available;
   width: calc(100vw - 72px);
   max-width: calc(100vw - 72px);
-  /* padding-left: 12px; */
 }
-div.dashboard {
-  height: -webkit-fill-available;
-  height: 100vw;
-  max-height: 100vw;
-  width: -webkit-fill-available;
-  width: calc(100vw - 72px);
-  max-width: calc(100vw - 72px);
-  overflow-y: scroll;
+.msg-sender{
+  text-decoration: none;
+  cursor: default;
 }
-div.dashboard .row {
-  margin: 0px;
+.msg-date{
+  text-decoration: none;
+  cursor: default;
 }
-div.dashboard .row.header div {
-  font-size:18px;
-  font-weight: 300;
-  padding-top: 12px;
-  padding-bottom: 4px;
-  text-size-adjust: 100%;
+.msg-subject{
+  text-decoration: none;
+  cursor: default;
 }
-div.dashboard .row.search div div.input-group > * {
-  border-radius: 0px !important;
+.msg-item.active .msg-sender,
+.msg-item.active .msg-date,
+.msg-item.active .msg-item-attachment{
+  color: #fff!important;
 }
-div.dashboard .row.line .button-group > * {
-  border-radius: 0px !important;
+.msg-item-attachment{
+  background-color: transparent;
 }
-81
+.msg-pointer{
+  cursor: pointer;
+}

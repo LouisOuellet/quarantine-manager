@@ -178,7 +178,7 @@
               </div>
             </div>
             <div class="card-footer">
-              <button type="button" data-bs-target="#imap" data-bs-toggle="collapse" aria-expanded="false"  class="btn btn-default"><i class="nav-icon fas fa-chevron-left me-2"></i><?= $this->Fields['Back'] ?></button>
+              <button type="button" data-bs-target="#smtp" data-bs-toggle="collapse" aria-expanded="false"  class="btn btn-default"><i class="nav-icon fas fa-chevron-left me-2"></i><?= $this->Fields['Back'] ?></button>
               <button type="button" data-bs-target="#license" data-bs-toggle="collapse" aria-expanded="false"  class="btn btn-primary float-end"><?= $this->Fields['Next'] ?><i class="nav-icon fas fa-chevron-right ms-2"></i></button>
             </div>
           </div>
