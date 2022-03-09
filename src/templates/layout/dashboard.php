@@ -28,5 +28,5 @@
   </div>
   <div class="content d-flex flex-column flex-shrink-0"></div>
 </main>
-<script src="/dist/js/engine.js"></script>
-<script src="/dist/js/dashboard.js"></script>
+<script src="./dist/js/engine.js"></script>
+<script src="./dist/js/dashboard.js"></script>
