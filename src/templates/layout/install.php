@@ -316,4 +316,4 @@
     </form>
   </div>
 </div>
-<script src="/dist/js/install.js"></script>
+<script src="./dist/js/install.js"></script>

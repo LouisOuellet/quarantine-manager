@@ -2,7 +2,7 @@
 	<div class="signin-box">
 		<div class="form-signin">
 			<form method="post">
-				<img class="mb-4" src="/dist/img/logo.png">
+				<img class="mb-4" src="./dist/img/logo.png">
 				<h1 class="h3 mb-3 fw-normal"><?= $this->Fields['Quarantine'] ?></h1>
 				<div class="form-floating">
 					<input type="email" class="form-control" id="username" name="username" placeholder="<?= $this->Fields['Username'] ?>">

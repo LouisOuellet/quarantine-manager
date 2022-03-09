@@ -108,6 +108,7 @@ class API{
 
   protected function set(){
     try {
+      $this->mkdir('config');
       $json = fopen(dirname(__FILE__,3).'/config/config.json', 'w');
   		fwrite($json, json_encode($this->Settings, JSON_PRETTY_PRINT));
   		fclose($json);
