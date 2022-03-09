@@ -1,7 +1,7 @@
 <main>
   <div class="sidebar d-flex flex-column flex-shrink-0 bg-dark">
     <span class="d-block p-3 link-dark text-decoration-none">
-      <img class="bi" src="/dist/img/logo.png">
+      <img class="bi" src="./dist/img/logo.png">
     </span>
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
       <li>
