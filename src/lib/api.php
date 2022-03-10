@@ -16,7 +16,8 @@ class API{
   protected $Domain;
   protected $URL;
   protected $Auth;
-  protected $Debug = true;
+  protected $Debug = false;
+  protected $Log = "tmp/php-pdf.log";
 
   public function __construct(){
 
@@ -25,7 +26,7 @@ class API{
     ini_set('max_execution_time', 0);
 
     // Init tmp directory
-    if(!is_dir(dirname(__FILE__,3) . '/tmp')){ mkdir(dirname(__FILE__,3) . '/tmp'); }
+    $this->mkdir('tmp');
 
 		// Gathering Server Information
 		$this->PHPVersion=substr(phpversion(),0,3);
@@ -75,9 +76,6 @@ class API{
       ];
       $this->Auth->SMTP->customization("Quarantine",$links);
     }
-
-    // Init tmp
-    $this->mkdir('tmp');
   }
 
   protected function mkdir($directory){
@@ -88,6 +86,18 @@ class API{
       if(!is_file($make)&&!is_dir($make)){ mkdir($make); }
     }
     return $make;
+  }
+
+  protected function error($log = []){
+    $this->log(json_encode($log, JSON_PRETTY_PRINT));
+    exit();
+  }
+
+  protected function log($txt = " "){
+    if($this->Debug){ echo $txt."\n"; }
+    if(isset($this->Settings['log']['status']) && $this->Settings['log']['status']){
+      return file_put_contents($this->Log, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
+    }
   }
 
   public function init(){
