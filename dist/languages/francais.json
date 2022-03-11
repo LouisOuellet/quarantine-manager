@@ -55,5 +55,7 @@
     "Unable to send the restored message": "Impossible d'envoyer le message restauré",
     "Unable to remove the restored message": "Impossible de supprimer le message restauré",
     "Unable to connect to IMAP server": "Impossible de se connecter au serveur IMAP",
-    "Unable to connect to SMTP server": "Impossible de se connecter au serveur SMTP"
+    "Unable to connect to SMTP server": "Impossible de se connecter au serveur SMTP",
+    "Unable to connect to user mailbox": "Impossible de se connecter à la boîte aux lettres de l'utilisateur",
+    "Unable to restore message": "Impossible de restaurer le message"
 }

@@ -55,5 +55,7 @@
     "Unable to send the restored message": "Unable to send the restored message",
     "Unable to remove the restored message": "Unable to remove the restored message",
     "Unable to connect to IMAP server": "Unable to connect to IMAP server",
-    "Unable to connect to SMTP server": "Unable to connect to SMTP server"
+    "Unable to connect to SMTP server": "Unable to connect to SMTP server",
+    "Unable to connect to user mailbox": "Unable to connect to user mailbox",
+    "Unable to restore message": "Unable to restore message"
 }

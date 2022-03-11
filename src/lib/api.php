@@ -229,47 +229,78 @@ class API{
   }
 
   public function restore($uid = null){
-  // file_put_contents('/your/file/here.eml', $headers . "\n" . $body);
     if($this->isLogin()){
       if($uid != null){
         if($this->Auth->IMAP->isConnected()){
-          if($eml = $this->Auth->IMAP->saveEml($uid)){
-            $file = dirname(__FILE__,3).'/tmp/'.$uid.'.eml';
-            if(file_exists($file)){ unlink( $file); }
-            file_put_contents($file, $eml);
-            $body = "This email was found in quarantine and restored.\nBeware of the content. This email was quarantined for a reason.";
-            $options = [
-              'from' => $this->Settings['imap']['username'],
-              'subject' => "Quarantined message ID=$uid restored",
-              'attachments' => [$file],
-            ];
-            if($this->Auth->SMTP->isConnected()){
-              if($this->Auth->SMTP->send($_SESSION['quarantine-username'], $body, $options)){
-                if($this->Auth->IMAP->delete($uid)){
-                  unlink($file);
-                  return [
-                    "success" => $this->Fields['Message restored'],
-                    "output" => [
-                      "uid" => $uid,
-                    ],
-                  ];
+          if($eml = $this->Auth->IMAP->getEml($uid)){
+            if(isset($this->Settings['method']) && $this->Settings['method'] == 'resend'){
+              $file = dirname(__FILE__,3).'/tmp/'.$uid.'.eml';
+              if(file_exists($file)){ unlink( $file); }
+              file_put_contents($file, $eml);
+              $body = "This email was found in quarantine and restored.\nBeware of the content. This email was quarantined for a reason.";
+              $options = [
+                'from' => $this->Settings['imap']['username'],
+                'subject' => "Quarantined message ID=$uid restored",
+                'attachments' => [$file],
+              ];
+              if($this->Auth->SMTP->isConnected()){
+                if($this->Auth->SMTP->send($_SESSION['quarantine-username'], $body, $options)){
+                  if($this->Auth->IMAP->delete($uid)){
+                    unlink($file);
+                    return [
+                      "success" => $this->Fields['Message restored'],
+                      "output" => [
+                        "uid" => $uid,
+                      ],
+                    ];
+                  } else {
+                    return [
+                      "error" => $this->Fields['Unable to remove the restored message'],
+                      "output" => [],
+                    ];
+                  }
                 } else {
                   return [
-                    "error" => $this->Fields['Unable to remove the restored message'],
+                    "error" => $this->Fields['Unable to send the restored message'],
                     "output" => [],
                   ];
                 }
               } else {
                 return [
-                  "error" => $this->Fields['Unable to send the restored message'],
+                  "error" => $this->Fields['Unable to connect to SMTP server'],
                   "output" => [],
                 ];
               }
             } else {
-              return [
-                "error" => $this->Fields['Unable to connect to SMTP server'],
-                "output" => [],
-              ];
+              // Connect to other mailbox
+              if($IMAP = $this->Auth->IMAP->connect($_SESSION['quarantine-username'],$_SESSION['quarantine-password'])){
+                // Append email
+                if($this->Auth->IMAP->saveEml($eml,$IMAP)){
+                  if($this->Auth->IMAP->delete($uid)){
+                    return [
+                      "success" => $this->Fields['Message restored'],
+                      "output" => [
+                        "uid" => $uid,
+                      ],
+                    ];
+                  } else {
+                    return [
+                      "error" => $this->Fields['Unable to remove the restored message'],
+                      "output" => [],
+                    ];
+                  }
+                } else {
+                  return [
+                    "error" => $this->Fields['Unable to restore message'],
+                    "output" => [],
+                  ];
+                }
+              } else {
+                return [
+                  "error" => $this->Fields['Unable to connect to user mailbox'],
+                  "output" => [],
+                ];
+              }
             }
           } else {
             return [
@@ -297,21 +328,31 @@ class API{
     }
   }
 
-  public function retrieve($to = null){
+  public function retrieve($recipient = null){
+    if($recipient == null){ $recipient = $_SESSION['quarantine-username']; }
+    $recipients = [];
+    array_push($recipients,$recipient);
+    if(isset($this->Settings['alias'][$recipient]) && is_array($this->Settings['alias'][$recipient])){
+      foreach($this->Settings['alias'][$recipient] as $alias){
+        array_push($recipients,$alias);
+      }
+    }
     // Check Connection Status
     if($this->Auth->IMAP->isConnected()){
       // Init Messages
       $messages = [];
       // Retrieve ALL Related emails
-      // Retrieve TO
-      $inbox = $this->Auth->IMAP->search('TO "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
-      // Retrieve CC
-      $inbox = $this->Auth->IMAP->search('CC "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
-      // Retrieve BCC
-      $inbox = $this->Auth->IMAP->search('BCC "'.strtolower($to).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-      $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+      foreach($recipients as $recipient){
+        // Retrieve TO
+        $inbox = $this->Auth->IMAP->search('TO "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+        // Retrieve CC
+        $inbox = $this->Auth->IMAP->search('CC "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+        // Retrieve BCC
+        $inbox = $this->Auth->IMAP->search('BCC "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
+        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+      }
       // Return
       return [
         "success" => $this->Fields['Messages retrieved'],
