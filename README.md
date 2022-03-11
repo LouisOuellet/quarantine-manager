@@ -16,6 +16,7 @@ Simply copy the files into a root directory of your website. Once done simply vi
 
 ## ChangeLog
 
+ * [2022-03-10]: Fix a bug in the Javascript Engine where Debug was always turned on.
  * [2022-03-10]: MAIL class rename MAILER.
  * [2022-03-10]: PHPIMAP class rename IMAP.
  * [2022-03-10]: Added support for aliases.
@@ -43,3 +44,4 @@ Simply copy the files into a root directory of your website. Once done simply vi
 
  * Bad Overflow-y when listing gets too long
  * Need a page to change settings
+ * Need an admin identification
