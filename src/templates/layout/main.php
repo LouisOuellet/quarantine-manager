@@ -9,11 +9,13 @@
           <i class="fas fa-tachometer-alt" aria-label="<?= $this->Fields['Dashboard'] ?>"></i>
         </a>
       </li>
-      <!-- <li>
-        <a href="#settings" class="nav-link py-3 border-bottom" title="<?= $this->Fields['Settings'] ?>" data-bs-toggle="tooltip" data-bs-placement="right">
-          <i class="fas fa-cog" aria-label="<?= $this->Fields['Settings'] ?>"></i>
-        </a>
-      </li> -->
+      <?php if(isset($this->Settings['administrator']) && $this->Auth->Username == $this->Settings['administrator']){ ?>
+        <li>
+          <a href="#settings" class="nav-link py-3 border-bottom" title="<?= $this->Fields['Settings'] ?>" data-bs-toggle="tooltip" data-bs-placement="right">
+            <i class="fas fa-cog" aria-label="<?= $this->Fields['Settings'] ?>"></i>
+          </a>
+        </li>
+      <?php } ?>
     </ul>
     <div class="dropdown border-top" title="<?= $this->Fields['Profile'] ?>" data-bs-toggle="tooltip" data-bs-placement="right">
       <a href="#" class="d-flex align-items-center justify-content-center p-3 link-light text-decoration-none dropdown-toggle" id="UserMenu" data-bs-toggle="dropdown" aria-expanded="false">
@@ -30,3 +32,5 @@
 </main>
 <script src="./dist/js/engine.js"></script>
 <script src="./dist/js/dashboard.js"></script>
+<script src="./dist/js/settings.js"></script>
+<script src="./dist/js/app.js"></script>

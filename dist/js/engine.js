@@ -16,10 +16,11 @@ var Engine = {
 	init:function(){
 		Engine.request('api','init',{toast: false,pace: false}).then(function(dataset){
 			Engine.debug = dataset.debug;
-			Engine.Storage.set('language',dataset.language);
-			Engine.Storage.set('languages',dataset.languages);
-			Engine.Storage.set('timezones',dataset.timezones);
-			Engine.Storage.set('fields',dataset.fields);
+      Engine.Storage.set('language','current',dataset.language);
+      Engine.Storage.set('language','list',dataset.languages);
+      Engine.Storage.set('language','fields',dataset.fields);
+      Engine.Storage.set('timezone','current',dataset.timezone);
+      Engine.Storage.set('timezone','list',dataset.timezones);
 			Engine.Storage.set('username',dataset.username);
 			Engine.initiated = true;
 		});
@@ -71,47 +72,32 @@ var Engine = {
 		};
 		for(var [key, option] of Object.entries(options)){ if(Engine.Helper.isSet(defaults,[key])){ defaults[key] = option; } }
 		if(Engine.debug){ defaults.toast = true;defaults.pace = true;defaults.report = true; }
+    if(defaults.pace){ track='track'; } else { track='ignore'; }
 		return new Promise(function(resolve, reject) {
-			var xhr = new XMLHttpRequest();
-			var params = {
-				method:'session',
-				request:api,
-				type:method,
-			};
-			if(defaults.data != null){ params.data = defaults.data; }
-			params = Engine.Helper.formatURL(params);
-			if(Engine.debug){ console.log(api,method,params,defaults); }
-			xhr.open('POST', 'api.php', true);
-			xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-			xhr.onerror = reject;
-			xhr.onload = function(){
-				if(Engine.debug){ console.log(this.status+' : '); }
-				if(this.status == 200){
-					if(this.responseText !== ''){
-						var decoded = Engine.Helper.decode(this.responseText);
-						if(decoded){
-							if(defaults.toast){
-								Engine.Toast.error(decoded);
-								Engine.Toast.warning(decoded);
-								Engine.Toast.success(decoded);
-							}
-							if(Engine.Helper.isSet(decoded,['output'])){ resolve(decoded.output); }
-							if(callback != null){
-								delete decoded.output;
-								callback(decoded);
-							}
-						} else {
-							if(defaults.report && defaults.toast){ Engine.Toast.report(this.responseText); }
-						}
-					} else {
-						if(defaults.report && defaults.toast){ Engine.Toast.report(this.responseText); }
-					}
-				} else {
-					if(defaults.report && defaults.toast){ Engine.Toast.report(this.responseText); }
-				}
-			}
-			if(defaults.pace){ Pace.restart(); }
-			xhr.send(params);
+      Pace[track](function(){
+  			var params = {
+  				method:'session',
+  				request:api,
+  				type:method,
+  			};
+  			if(defaults.data != null){ params.data = defaults.data; }
+  			params = Engine.Helper.formatOBJ(params);
+  			if(Engine.debug){ console.log(api,method,params,defaults); }
+        $.post('./api.php',params,function(data,status,xhr){
+          if(defaults.toast){
+            Engine.Toast.error(data);
+            Engine.Toast.warning(data);
+            Engine.Toast.success(data);
+          }
+          if(Engine.Helper.isSet(data,['output'])){ resolve(data.output); }
+          if(callback != null){
+            delete data.output;
+            callback(data);
+          }
+        }, "json" ).fail( function(xhr,status,data){
+          if(defaults.report && defaults.toast){ Engine.Toast.report({status:status,xhr:xhr,data:data}); }
+        });
+      });
 		});
 	},
 	Toast:{
@@ -157,7 +143,7 @@ var Engine = {
 		report:function(dataset){
 			if(Engine.debug){
 				var text = 'An error occured in the execution of this API request. See the console(F12) for more details.';
-				if(typeof Engine.Storage.get('fields','An error occured in the execution of this API request. See the console(F12) for more details.') !== 'undefined'){
+				if(typeof Engine.Storage.get('fields','An error occured in the execution of this API request. See the console(F12) for more details.') !== 'undefined' && ! jQuery.isEmptyObject(Engine.Storage.get('fields','An error occured in the execution of this API request. See the console(F12) for more details.'))){
 					text = Engine.Storage.get('fields','An error occured in the execution of this API request. See the console(F12) for more details.');
 				} else { text = 'An error occured in the execution of this API request. See the console(F12) for more details.'; }
 				Engine.Toast.show.fire({
@@ -193,6 +179,12 @@ var Engine = {
 		},
 		formatURL:function(params){
 			return Object.keys(params).map(function(key){ return key+"="+Engine.Helper.encode(params[key]) }).join("&");
+		},
+		formatOBJ:function(params){
+      for(var [key, value] of Object.entries(params)){
+        params[key] = Engine.Helper.encode(value);
+      }
+      return params;
 		},
 		copyToClipboard:function(text){
 		  var aux = document.createElement("input");

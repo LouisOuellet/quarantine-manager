@@ -24,6 +24,13 @@ class URLparser{
 		return json_last_error() === JSON_ERROR_NONE;
 	}
 
+	public function sanitize($value) {
+		$value = strip_tags($value);
+		$value = htmlentities($value);
+		$value = stripslashes($value);
+		return $value;
+	}
+
 	public function parse($string){
 		if($this->isJson($string)){
 			try { return json_decode($string, true); }

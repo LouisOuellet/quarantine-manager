@@ -57,5 +57,19 @@
     "Unable to connect to IMAP server": "Unable to connect to IMAP server",
     "Unable to connect to SMTP server": "Unable to connect to SMTP server",
     "Unable to connect to user mailbox": "Unable to connect to user mailbox",
-    "Unable to restore message": "Unable to restore message"
+    "Unable to restore message": "Unable to restore message",
+    "Administrator": "Administrator",
+    "All": "All",
+    "Search": "Search",
+    "Delete": "Delete",
+    "You are not administrator": "You are not administrator",
+    "Settings retrieved": "Settings retrieved",
+    "Settings saved": "Settings saved",
+    "Unable to save settings": "Unable to save settings",
+    "Unable to find language": "Unable to find language",
+    "Unable to find timezone": "Unable to find timezone",
+    "Missing parameters": "Missing parameters",
+    "Unable to login on server": "Unable to login on server",
+    "Unable to login with this administrator on server": "Unable to login with this administrator on server",
+    "Save": "Save"
 }

@@ -11,13 +11,14 @@ class API{
   protected $Languages = [];
   protected $Fields = [];
   protected $Timezones;
+  protected $Timezone = 'America/Toronto';
   protected $PHPVersion;
   protected $Protocol;
   protected $Domain;
   protected $URL;
   protected $Auth;
   protected $Debug = false;
-  protected $Log = "tmp/php-pdf.log";
+  protected $Log = "tmp/api.log";
 
   public function __construct(){
 
@@ -60,8 +61,9 @@ class API{
     foreach($this->Languages as $key => $value){ $this->Languages[$key] = str_replace('.json','',$value); }
     $this->Fields = json_decode(file_get_contents(dirname(__FILE__,3) . "/dist/languages/".$this->Language.".json"),true);
 
-		// Setup Instance
-		if(isset($this->Settings['timezone'])){ date_default_timezone_set($this->Settings['timezone']); }
+		// Setup Instance Timezone
+		if(isset($this->Settings['timezone'])){ $this->Timezone = $this->Settings['timezone']; }
+    date_default_timezone_set($this->Timezone);
 
     // Setup Auth
     $this->Auth = new Auth($this->Settings,$this->Fields);
@@ -70,8 +72,6 @@ class API{
     if(isset($this->Settings['smtp'],$this->Settings['smtp']['username'],$this->Settings['smtp']['password'],$this->Settings['smtp']['host'],$this->Settings['smtp']['port'],$this->Settings['smtp']['encryption'])){
       $links = [
         "support" => "https://github.com/LouisOuellet/quarantine-manager",
-        "trademark" => "#",
-        "policy" => "#",
         "logo" => $this->URL."dist/img/logo.png"
       ];
       $this->Auth->SMTP->customization("Quarantine",$links);
@@ -106,6 +106,7 @@ class API{
         "success" => $this->Fields['Initialized'],
         "output" => [
           "timezones" => $this->Timezones,
+          "timezone" => $this->Timezone,
           "language" => $this->Language,
           "languages" => $this->Languages,
           "fields" => $this->Fields,
@@ -132,6 +133,10 @@ class API{
 
   public function isLogin(){
     if((session_status() == PHP_SESSION_ACTIVE)&&(isset($_SESSION['quarantine-username']))){ return true; } else { return false; }
+  }
+
+  public function isAdmin(){
+    if($this->isLogin() && isset($this->Settings['administrator']) && $this->Auth->Username == $this->Settings['administrator']){ return true; } else { return false; }
   }
 
   public function logout(){
@@ -317,6 +322,109 @@ class API{
       } else {
         return [
           "error" => $this->Fields['Unable to identify the message'],
+          "output" => [],
+        ];
+      }
+    } else {
+      return [
+        "error" => $this->Fields['You are not logged in'],
+        "output" => [],
+      ];
+    }
+  }
+
+  public function save($settings = []){
+    if($this->isLogin()){
+      if($this->isAdmin()){
+        $return = [];
+        $return['output']['errors'] = [];
+        foreach($settings as $key => $value){
+          if(isset($this->Settings[$key])){
+            switch($key){
+              case"administrator":
+                if(isset($value['username'],$value['password'])){
+                  if($this->Auth->login($value['username'], $value['password'])){
+                    $this->Settings[$key] = $value['username'];
+                  } else {
+                    $return['error'] = $this->Fields['Unable to login with this administrator on server'];
+                    array_push($return['output']['errors'],$key);
+                  }
+                } else {
+                  $return['error'] = $this->Fields['Missing parameters'];
+                  array_push($return['output']['errors'],$key);
+                }
+                break;
+              case"smtp":
+              case"imap":
+                if(isset($value['host'],$value['encryption'],$value['port'],$value['username'],$value['password'])){
+                  if($this->Auth->login($value['username'], $value['password'], $key, $value)){
+                    $this->Settings[$key] = $value;
+                  } else {
+                    $return['error'] = $this->Fields['Unable to login on server'];
+                    array_push($return['output']['errors'],$key);
+                  }
+                } else {
+                  $return['error'] = $this->Fields['Missing parameters'];
+                  array_push($return['output']['errors'],$key);
+                }
+                break;
+              case"timezone":
+                if(in_array($value,$this->Timezones)){
+                  $this->Settings[$key] = $value;
+                } else {
+                  $return['error'] = $this->Fields['Unable to find timezone'];
+                  array_push($return['output']['errors'],$key);
+                }
+                break;
+              case"language":
+                if(in_array($value,$this->Languages)){
+                  $this->Settings[$key] = $value;
+                } else {
+                  $return['error'] = $this->Fields['Unable to find language'];
+                  array_push($return['output']['errors'],$key);
+                }
+                break;
+              default:
+                $this->Settings[$key] = $value;
+                break;
+            }
+          }
+        }
+        // Saving Settings
+        if($this->set()){
+          $return['success'] = $this->Fields['Settings saved'];
+        } else {
+          $return['error'] = $this->Fields['Unable to save settings'];
+        }
+        if(empty($return['output']['errors'])){ unset($return['output']['errors']); }
+        $return['output']['settings'] = $this->Settings;
+        return $return;
+      } else {
+        return [
+          "error" => $this->Fields['You are not administrator'],
+          "output" => [],
+        ];
+      }
+    } else {
+      return [
+        "error" => $this->Fields['You are not logged in'],
+        "output" => [],
+      ];
+    }
+  }
+
+  public function list(){
+    if($this->isLogin()){
+      if($this->isAdmin()){
+        return [
+          "success" => $this->Fields['Settings retrieved'],
+          "output" => [
+            "settings" => $this->Settings,
+          ],
+        ];
+      } else {
+        return [
+          "error" => $this->Fields['You are not administrator'],
           "output" => [],
         ];
       }

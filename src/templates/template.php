@@ -64,16 +64,10 @@
 	<!-- Pace-Settings -->
 	<script>
 		window.paceOptions = {
-			// Only show the progress on regular and ajax-y page navigation,
-			// not every request
-			restartOnRequestAfter: 5,
+			restartOnRequestAfter: false,
 			startOnPageLoad:false,
-
-			ajax: {
-				trackMethods: ['GET', 'POST', 'PUT', 'DELETE', 'REMOVE'],
-				trackWebSockets: true,
-				ignoreURLs: [/.*api.php.*/]
-			}
+      ajax: { trackMethods: ['POST'] },
+      document: true,
 		};
 	</script>
   <!-- Pace-Progress -->
@@ -89,7 +83,7 @@
     if($this->isInstall()){
   		if((!isset($this->Settings['maintenance']))||(!$this->Settings['maintenance'])){
   			if($this->isLogin()){
-  				require_once dirname(__FILE__,2) . '/templates/layout/dashboard.php';
+  				require_once dirname(__FILE__,2) . '/templates/layout/main.php';
   			} else { require_once dirname(__FILE__,2) . '/templates/layout/signin.php'; }
   		} else { require_once dirname(__FILE__,2) . '/templates/layout/maintenance.php'; }
   	} else { require_once dirname(__FILE__,2) . '/templates/layout/install.php'; }

@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+// Set Headers
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
 // Import Librairies
 require_once dirname(__FILE__).'/src/lib/api.php';
 require_once dirname(__FILE__).'/src/lib/url.php';
@@ -12,6 +16,8 @@ if(!empty($_POST)){
 	foreach($_POST as $key => $value){ $_POST[$key] = $URL->decode($value); }
 	// Parse
 	foreach($_POST as $key => $value){ $_POST[$key] = $URL->parse($value); }
+	// Sanitize
+	foreach($_POST as $key => $value){ $_POST[$key] = $URL->sanitize($value); }
 	if(isset($_POST['request'])){
 		$trigger = $_POST['request'];
 		// Import API
@@ -89,7 +95,6 @@ if(!empty($_POST)){
 		}
 		// Encode and Print
 		$return['request'] = $_POST;
-		$encoding = $URL->encode($return);
-		echo $encoding;
+		echo json_encode($return, JSON_PRETTY_PRINT);
 	}
 }

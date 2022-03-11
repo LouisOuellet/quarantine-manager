@@ -10,6 +10,7 @@ class Auth{
   public $IMAP;
   protected $Settings = [];
   protected $Fields = [];
+  public $Username = null;
 
   public function __construct($settings = [],$fields = []){
     if(!empty($settings)){ $this->Settings = $settings; }
@@ -20,22 +21,25 @@ class Auth{
     if(isset($this->Settings['smtp'])){
       $this->SMTP = new MAILER($this->Settings['smtp'],$this->Fields);
     } else { $this->SMTP = new MAILER(); }
-    if(!isset($_SESSION['quarantine-username']) && isset($_POST['signin'],$_POST['username'],$_POST['password'])){
-      $this->try($_POST['username'],$_POST['password']);
-    }
+    $this->authenticate();
   }
 
-  public function try($username, $password){
-    if((session_status() == PHP_SESSION_ACTIVE)&&(isset($_SESSION['quarantine-username']))){} else {
+  public function authenticate(){
+    if((session_status() == PHP_SESSION_ACTIVE)&&(isset($_SESSION['quarantine-username']))){
+      $this->Username = $_SESSION['quarantine-username'];
+      return true;
+    } else {
       if(!isset($_COOKIE['quarantine-username'])){
-        if($this->IMAP->login($username,$password)){
-          $_SESSION['quarantine-username'] = $username;
-          $_SESSION['quarantine-password'] = $password;
-          return true;
-        } else {
-          return false;
-        }
+        if(isset($_POST['signin'],$_POST['username'],$_POST['password'])){
+          if($this->login($_POST['username'],$_POST['password'])){
+            $this->Username = $_POST['username'];
+            $_SESSION['quarantine-username'] = $_POST['username'];
+            $_SESSION['quarantine-password'] = $_POST['password'];
+            return true;
+          } else { return false; }
+        } else { return false; }
       } else {
+        $this->Username = $_COOKIE['quarantine-username'];
         $_SESSION['quarantine-username'] = $_COOKIE['quarantine-username'];
         $_SESSION['quarantine-password'] = $_COOKIE['quarantine-password'];
       }
@@ -44,10 +48,13 @@ class Auth{
 
   public function login($username, $password, $type = "imap", $settings = []){
     if($type == "imap"){
-      if(empty($settings) && !empty($this->Settings)){ $settings = $this->Settings['imap']; }
-      if(isset($settings['host'],$settings['port'],$settings['encryption'])){
-        return $this->IMAP->login($username,$password,$settings['host'],$settings['port'],$settings['encryption']);
-      } else { return false; }
+      if(empty($settings)){
+        return $this->IMAP->login($username,$password);
+      } else {
+        if(isset($settings['host'],$settings['port'],$settings['encryption'])){
+          return $this->IMAP->login($username,$password,$settings['host'],$settings['port'],$settings['encryption']);
+        } else { return false; }
+      }
     } elseif($type == "smtp"){
       if(empty($settings) && !empty($this->Settings)){ $settings = $this->Settings['smtp']; }
       if(isset($settings['host'],$settings['port'],$settings['encryption'])){
