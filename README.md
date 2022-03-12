@@ -47,6 +47,7 @@ Please disclose any vulnerabilities found responsibly – report security issues
 
 ## Known Issues
 
+ * signing out requires browser refresh
  * sort messages by date
  * Add messages count at bottom
  * SMTP Authentication seems to always accept all logins
