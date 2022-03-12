@@ -9,7 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
-class MAIL{
+class MAILER{
 
 	public $Mailer; // Contains the PHPMailer Class
 	public $Status = false;
@@ -173,9 +173,13 @@ class MAIL{
 											<tbody>
 												<tr width="100%" border="0" cellspacing="0" cellpadding="0">
 													<td style="padding:0px 0px 0px 0px;" align="center">
-														<div style="color:#495057;font-size: 2.1rem; text-align: center;font-family:\'Helvetica Neue\',\'Arial\',\'Helvetica\',\'Verdana\',sans-serif;,line-height: 1.5; padding-bottom: 20px;">
-															<img src="'.$this->Links['logo'].'" style="width:100px;vertical-align: middle;border-style: none;">
-															<b style="vertical-align: -10px; font-weight: bold;padding: .5rem;">'.$this->Brand.'</b>
+														<div style="color:#495057;font-size: 2.1rem; text-align: center;font-family:\'Helvetica Neue\',\'Arial\',\'Helvetica\',\'Verdana\',sans-serif;,line-height: 1.5; padding-bottom: 20px;">';
+														if(isset($this->Links['logo']) && $this->Links['logo'] != '' && $this->Links['logo'] != '#'){
+															$this->Mailer->Body .= '<img src="'.$this->Links['logo'].'" style="width:100px;vertical-align: middle;border-style: none;"><b style="vertical-align: -10px; font-weight: bold;padding: .5rem;">'.$this->Brand.'</b>';
+														} else {
+															$this->Mailer->Body .= '<b style="font-weight: bold;padding: .5rem;">'.$this->Brand.'</b>';
+														}
+														$this->Mailer->Body .= '
 														</div>
 													</td>
 												</tr>';
@@ -247,84 +251,6 @@ class MAIL{
 										</table>
 									</td>
 								</tr>';
-							// $this->Mailer->Body .= '
-							// 	<tr style="width:100%!important; height:auto;" align="center">
-							// 		<td class="emailcontent" style="padding-bottom:64px;">
-							// 			<table class="responsive" style="border-collapse: collapse;" width="692px" cellspacing="0" cellpadding="0" border="0" align="center">
-							// 				<tbody>
-							// 					<tr class="promos">
-							// 						<td class="promo-container" bgcolor="#FAFAFA">
-							// 							<table class="promo" style="width:336px;" cellspacing="0" cellpadding="0" border="0">
-							// 								<tbody>
-							// 									<tr>
-							// 										<td class="promo-padding" style="padding:40px 20px 40px 20px" valign="top" bgcolor="#FAFAFA" align="center">
-							// 											<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
-							// 												<tbody>
-							// 													<tr>
-							// 														<td class="promo1" style="padding-bottom:15px;" align="center">
-							// 															<a href="'.$this->URL.'?p=support" style="display:block;color:#434343;text-decoration:none" moz-do-not-send="true">
-							// 																<img src="'.$this->URL.'dist/img/globe-1x.png" alt="" moz-do-not-send="true" height="60" border="0">
-							// 															</a>
-							// 														</td>
-							// 													</tr>
-							// 													<tr>
-							// 														<td style="color:#333333;font-size:28px; line-height:32px; padding-bottom:18px" align="center">
-							// 															<a href="'.$this->URL.'?p=support" style="display:block;color:#434343;font-weight:200;text-decoration:none" moz-do-not-send="true">
-							// 																Get help online
-							// 															</a>
-							// 														</td>
-							// 													</tr>
-							// 													<tr>
-							// 														<td style="color:#333333;font-size:16px; line-height:24px" align="center">
-							// 															<a href="'.$this->URL.'?p=support" style="display:block;color:#434343;text-decoration:none" moz-do-not-send="true">
-							// 																Visit Apple Support to learn more about your product, download software updates, and much more.
-							// 															</a>
-							// 														</td>
-							// 													</tr>
-							// 												</tbody>
-							// 											</table>
-							// 										</td>
-							// 									</tr>
-							// 								</tbody>
-							// 							</table>
-							// 						</td>
-							// 						<td class="promo-spacer" style="width:20px" width="20px"><br></td>
-							// 						<td class="promo-container" bgcolor="#FAFAFA">
-							// 							<table class="promo" style="width:336px;" cellspacing="0" cellpadding="0" border="0">
-							// 								<tbody>
-							// 									<tr>
-							// 										<td class="promo-padding" style="padding:40px 20px 40px 20px" valign="top" bgcolor="#FAFAFA" align="center">
-							// 											<table width="100%" cellspacing="0" cellpadding="0" border="0" align="center">
-							// 												<tbody>
-							// 													<tr>
-							// 														<td class="promo2" style="padding-bottom:15px;" align="center">
-							// 															<a href="'.$this->URL.'?p=chat" style="display:block;color:#434343;text-decoration:none" moz-do-not-send="true">
-							// 																<img src="'.$this->URL.'dist/img/chat-1x.png" alt="" moz-do-not-send="true" height="60" border="0">
-							// 															</a>
-							// 														</td>
-							// 													</tr>
-							// 													<tr>
-							// 														<td style="color:#333333;font-size:28px; line-height:32px; padding-bottom:18px" align="center">
-							// 															<a href="'.$this->URL.'?p=chat" style="display:block;color:#434343;font-weight:200;text-decoration:none" moz-do-not-send="true">Join the conversation</a>
-							// 														</td>
-							// 													</tr>
-							// 													<tr>
-							// 														<td style="color:#333333;font-size:16px; line-height:24px" align="center">
-							// 															<a href="'.$this->URL.'?p=chat" style="display:block;color:#434343;text-decoration:none" moz-do-not-send="true">Find and share solutions with Apple users around the world.</a>
-							// 														</td>
-							// 													</tr>
-							// 												</tbody>
-							// 											</table>
-							// 										</td>
-							// 									</tr>
-							// 								</tbody>
-							// 							</table>
-							// 						</td>
-							// 					</tr>
-							// 				</tbody>
-							// 			</table>
-							// 		</td>
-							// 	</tr>';
 							$this->Mailer->Body .= '
 								<tr style="width:100%!important; background-color:#343A40;" align="center">
 									<td class="footer" style="padding-top: 64px; padding-bottom: 64px">
@@ -336,10 +262,17 @@ class MAIL{
 													</td>
 												</tr>
 												<tr width="100%" border="0" cellspacing="0" cellpadding="0">
-													<td style="font-family:\'Helvetica Neue\',\'Arial\',\'Helvetica\',\'Verdana\',sans-serif;text-align:center; font-size:12px; line-height:16px; color:#999999" align="center">
-														<a style="color:#ffffff;margin-right:4px;" href="'.$this->Links['trademark'].'" moz-do-not-send="true">All Rights Reserved</a>|
-														<a style="margin-left:4px;margin-right:4px;color:#ffffff;" href="'.$this->Links['policy'].'" moz-do-not-send="true">Privacy Policy</a>|
-														<a style="margin-left:4px;color:#ffffff;" href="'.$this->Links['support'].'" moz-do-not-send="true">Support</a>
+													<td style="font-family:\'Helvetica Neue\',\'Arial\',\'Helvetica\',\'Verdana\',sans-serif;text-align:center; font-size:12px; line-height:16px; color:#999999" align="center">';
+														if(isset($this->Links['trademark']) && $this->Links['trademark'] != '' && $this->Links['trademark'] != '#'){
+															$this->Mailer->Body .= '<a style="margin-left:4px;margin-right:4px;color:#ffffff;" href="'.$this->Links['trademark'].'" moz-do-not-send="true">All Rights Reserved</a>';
+														}
+														if(isset($this->Links['policy']) && $this->Links['policy'] != '' && $this->Links['policy'] != '#'){
+															$this->Mailer->Body .= '<a style="margin-left:4px;margin-right:4px;color:#ffffff;" href="'.$this->Links['policy'].'" moz-do-not-send="true">Privacy Policy</a>';
+														}
+														if(isset($this->Links['support']) && $this->Links['support'] != '' && $this->Links['support'] != '#'){
+															$this->Mailer->Body .= '<a style="margin-left:4px;margin-right:4px;color:#ffffff;" href="'.$this->Links['support'].'" moz-do-not-send="true">Support</a>';
+														}
+													$this->Mailer->Body .= '
 													</td>
 												</tr>';
 												if($acceptReplies){

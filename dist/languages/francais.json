@@ -55,5 +55,21 @@
     "Unable to send the restored message": "Impossible d'envoyer le message restauré",
     "Unable to remove the restored message": "Impossible de supprimer le message restauré",
     "Unable to connect to IMAP server": "Impossible de se connecter au serveur IMAP",
-    "Unable to connect to SMTP server": "Impossible de se connecter au serveur SMTP"
+    "Unable to connect to SMTP server": "Impossible de se connecter au serveur SMTP",
+    "Unable to connect to user mailbox": "Impossible de se connecter à la boîte aux lettres de l'utilisateur",
+    "Unable to restore message": "Impossible de restaurer le message",
+    "Administrator": "Administrateur",
+    "All": "Tous",
+    "Search": "Rechercher",
+    "Delete": "Supprimer",
+    "You are not administrator": "Vous n'êtes pas l'administrateur",
+    "Settings retrieved": "Paramètres récupérés",
+    "Settings saved": "Paramètres enregistrés",
+    "Unable to save settings": "Impossible d'enregistrer les paramètres",
+    "Unable to find language": "Impossible de trouver la langue",
+    "Unable to find timezone": "Impossible de trouver le fuseau horaire",
+    "Missing parameters": "Paramètres manquants",
+    "Unable to login on server": "Impossible de se connecter au serveur",
+    "Unable to login with this administrator on server": "Impossible de se connecter avec cet administrateur sur le serveur",
+    "Save": "Sauvegarder"
 }

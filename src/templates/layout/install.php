@@ -154,7 +154,7 @@
                 <label for="language" class="col-sm-2 col-form-label"><?= $this->Fields['Language'] ?></label>
                 <div class="col-sm-10 input-group">
                   <span class="input-group-text">
-                    <i class="fas fa-language"></i>
+                    <i class="fas fa-atlas"></i>
                   </span>
                   <select class="form-control" name="language" id="language">
                     <?php foreach($this->Languages as $language) {?>
@@ -167,7 +167,7 @@
                 <label for="timezone" class="col-sm-2 col-form-label"><?= $this->Fields['Timezone'] ?></label>
                 <div class="col-sm-10 input-group">
                   <span class="input-group-text">
-                    <i class="far fa-clock"></i>
+                    <i class="far fa-globe-americas"></i>
                   </span>
                   <select class="form-control" name="timezone" id="timezone">
                     <?php foreach($this->Timezones as $timezone) {?>
