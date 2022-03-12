@@ -9,7 +9,7 @@ class API{
   protected $Settings = [];
   protected $Language = 'english';
   protected $Languages = [];
-  protected $Fields = [];
+  public $Fields = [];
   protected $Timezones;
   protected $Timezone = 'America/Toronto';
   protected $PHPVersion;
@@ -25,6 +25,7 @@ class API{
     // Increase PHP memory limit
     ini_set('memory_limit', '2G');
     ini_set('max_execution_time', 0);
+    ini_set("display_errors", 0);
 
     // Init tmp directory
     $this->mkdir('tmp');
@@ -43,7 +44,7 @@ class API{
 
 		// Setup Debug
 		if((isset($this->Settings['debug']))&&($this->Settings['debug'])){ $this->Debug = true; }
-    if($this->Debug){ error_reporting(-1); } else { error_reporting(0); }
+    if($this->Debug){ error_reporting(E_ALL & ~E_NOTICE); } else { error_reporting(0); }
 
     // Setup URL
 		if(isset($_SERVER['HTTP_HOST'])){
@@ -337,7 +338,6 @@ class API{
     if($this->isLogin()){
       if($this->isAdmin()){
         $return = [];
-        $return['output']['errors'] = [];
         foreach($settings as $key => $value){
           if(isset($this->Settings[$key])){
             switch($key){
@@ -347,11 +347,11 @@ class API{
                     $this->Settings[$key] = $value['username'];
                   } else {
                     $return['error'] = $this->Fields['Unable to login with this administrator on server'];
-                    array_push($return['output']['errors'],$key);
+                    $return['output']['errors'][$key] = $return['error'];
                   }
                 } else {
                   $return['error'] = $this->Fields['Missing parameters'];
-                  array_push($return['output']['errors'],$key);
+                  $return['output']['errors'][$key] = $return['error'];
                 }
                 break;
               case"smtp":
@@ -361,11 +361,11 @@ class API{
                     $this->Settings[$key] = $value;
                   } else {
                     $return['error'] = $this->Fields['Unable to login on server'];
-                    array_push($return['output']['errors'],$key);
+                    $return['output']['errors'][$key] = $return['error'];
                   }
                 } else {
                   $return['error'] = $this->Fields['Missing parameters'];
-                  array_push($return['output']['errors'],$key);
+                  $return['output']['errors'][$key] = $return['error'];
                 }
                 break;
               case"timezone":
@@ -373,7 +373,7 @@ class API{
                   $this->Settings[$key] = $value;
                 } else {
                   $return['error'] = $this->Fields['Unable to find timezone'];
-                  array_push($return['output']['errors'],$key);
+                  $return['output']['errors'][$key] = $return['error'];
                 }
                 break;
               case"language":
@@ -381,7 +381,7 @@ class API{
                   $this->Settings[$key] = $value;
                 } else {
                   $return['error'] = $this->Fields['Unable to find language'];
-                  array_push($return['output']['errors'],$key);
+                  $return['output']['errors'][$key] = $return['error'];
                 }
                 break;
               default:
@@ -391,24 +391,27 @@ class API{
           }
         }
         // Saving Settings
-        if($this->set()){
+        if(!isset($return['error']) && $this->set()){
           $return['success'] = $this->Fields['Settings saved'];
         } else {
           $return['error'] = $this->Fields['Unable to save settings'];
         }
-        if(empty($return['output']['errors'])){ unset($return['output']['errors']); }
         $return['output']['settings'] = $this->Settings;
         return $return;
       } else {
         return [
           "error" => $this->Fields['You are not administrator'],
-          "output" => [],
+          "output" => [
+            "settings" => $this->Settings,
+          ],
         ];
       }
     } else {
       return [
         "error" => $this->Fields['You are not logged in'],
-        "output" => [],
+        "output" => [
+          "settings" => $this->Settings,
+        ],
       ];
     }
   }

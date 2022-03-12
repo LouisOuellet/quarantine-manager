@@ -1,12 +1,12 @@
 function loadSettings(){
-  $('main div.sidebar ul li a').removeClass('active');
-  $('main div.sidebar ul li a[href="#settings"]').addClass('active');
+  $('main div.sidebar ul li a').removeClass('active').tooltip('hide');
+  $('main div.sidebar ul li a[href="#settings"]').addClass('active').tooltip('hide');
   var settings = $(document.createElement('div')).addClass("d-flex flex-column align-items-stretch noselect flex-shrink-0 bg-white").attr('data-field','uid');
   settings.header = $(document.createElement('div')).addClass("d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom");
   settings.header.title = $(document.createElement('h1')).addClass("text-dark").html(Engine.Storage.get('language',['fields','Settings'])).appendTo(settings.header);
   settings.list = $(document.createElement('div')).addClass("list-group list-group-flush border-bottom scrollarea");
   settings.append([settings.header,settings.list]);
-  settings.item = $(document.createElement('a')).addClass("list-group-item list-group-item-action py-3 lh-tight msg-item").attr('data-bs-toggle','tooltip').attr('data-bs-placement','top');
+  settings.item = $(document.createElement('a')).addClass("d-flex align-items-stretch noselect flex-shrink-0 list-group-item list-group-item-action py-3 lh-tight msg-item").attr('data-bs-toggle','tooltip').attr('data-bs-placement','top');
   settings.item.header = $(document.createElement('a')).addClass("d-flex w-100 align-items-center justify-content-between link-dark msg-sender");
   settings.item.header.name = $(document.createElement('strong')).addClass("mb-1 noselect").attr('data-field','name');
   settings.item.form = $(document.createElement('div')).addClass("col-10 mb-1 small noselect msg-subject").attr('data-field','form');
@@ -123,10 +123,12 @@ function loadSettings(){
       settings.list.smtp.form.port.field.val(dataset.settings.smtp.port);
       settings.list.smtp.form.username.field.val(dataset.settings.smtp.username);
       settings.list.smtp.form.password.field.val(dataset.settings.smtp.password);
-      settings.list.find('.bg-danger').removeClass('bg-danger');
+      settings.list.find('.bg-danger').removeClass('bg-danger').tooltip('disable');
+      settings.list.find('.link-light').removeClass('link-light').addClass('link-dark');
       if(Engine.Helper.isSet(dataset,['errors'])){
-        for(var [key, form] of Object.entries(dataset.errors)){
-          settings.list[form].addClass('bg-danger');
+        for(var [form, error] of Object.entries(dataset.errors)){
+          settings.list[form].addClass('bg-danger').attr('title',error).tooltip();
+          settings.list[form].find('.link-dark').removeClass('link-dark').addClass('link-light');
         }
       }
     });

@@ -16,8 +16,6 @@ if(!empty($_POST)){
 	foreach($_POST as $key => $value){ $_POST[$key] = $URL->decode($value); }
 	// Parse
 	foreach($_POST as $key => $value){ $_POST[$key] = $URL->parse($value); }
-	// Sanitize
-	foreach($_POST as $key => $value){ $_POST[$key] = $URL->sanitize($value); }
 	if(isset($_POST['request'])){
 		$trigger = $_POST['request'];
 		// Import API
@@ -29,9 +27,7 @@ if(!empty($_POST)){
 			$return = [
 				"error" => $API->Fields["Unknown API"],
 				"api" => [
-					"name" => $trigger,
 					"class" => $request,
-					"file" => $file,
 				],
 				"code" => 404,
 			];
@@ -52,9 +48,8 @@ if(!empty($_POST)){
 							$return = [
 								"error" => $API->Fields["Unknown request"],
 								"api" => [
-									"name" => $trigger,
+									"method" => $method,
 									"class" => $request,
-									"file" => $file,
 								],
 								"code" => 404,
 							];
@@ -63,9 +58,8 @@ if(!empty($_POST)){
 						$return = [
 							"error" => $API->Fields["No request"],
 							"api" => [
-								"name" => $trigger,
+								"method" => $method,
 								"class" => $request,
-								"file" => $file,
 							],
 							"code" => 404,
 						];
@@ -74,9 +68,8 @@ if(!empty($_POST)){
 					$return = [
 						"error" => $API->Fields["Not logged in"],
 						"api" => [
-							"name" => $trigger,
+							"method" => $method,
 							"class" => $request,
-							"file" => $file,
 						],
 						"code" => 403,
 					];
@@ -85,9 +78,8 @@ if(!empty($_POST)){
 				$return = [
 					"error" => $API->Fields["Server under maintenance"],
 					"api" => [
-						"name" => $trigger,
+						"method" => $method,
 						"class" => $request,
-						"file" => $file,
 					],
 					"code" => 500,
 				];
