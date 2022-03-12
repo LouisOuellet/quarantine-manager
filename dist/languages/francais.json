@@ -71,5 +71,6 @@
     "Missing parameters": "Paramètres manquants",
     "Unable to login on server": "Impossible de se connecter au serveur",
     "Unable to login with this administrator on server": "Impossible de se connecter avec cet administrateur sur le serveur",
-    "Save": "Sauvegarder"
+    "Save": "Sauvegarder",
+    "Restore": "Restaurer"
 }

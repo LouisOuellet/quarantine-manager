@@ -1,5 +1,11 @@
-# Quarantine Manager
-PHP application to manage quarantined emails using IMAP.
+![Quarantine Manager](/dist/img/logo.png)
+
+# Quarantine Manager - Manage your quarantined emails using IMAP
+![License](https://img.shields.io/github/license/LouisOuellet/quarantine-manager?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/LouisOuellet/quarantine-manager?style=for-the-badge)
+![GitHub top language](https://img.shields.io/github/languages/top/LouisOuellet/quarantine-manager?style=for-the-badge)
+![GitHub version](https://img.shields.io/badge/version-22.03--11-green?style=for-the-badge)
+
 
 ## Can I use this?
 If your email server is setup so that you have a dedicated mailbox for quarantined items, this project is for you.
@@ -16,6 +22,7 @@ Simply copy the files into a root directory of your website. Once done simply vi
 
 ## ChangeLog
 
+ * [2022-03-11][PHP IMAP class]: Found 3 typos. (encyption => encryption)
  * [2022-03-11]: Added the save event for the settings. Only need to test now.
  * [2022-03-11][PHP API class]: Added a save method to save the settings
  * [2022-03-11]: Added the following settings in the settings area: (IMAP,SMTP,Timezone,Language and Administrator).
@@ -61,5 +68,9 @@ Simply copy the files into a root directory of your website. Once done simply vi
 
 ## Known Issues
 
- * Need a page to change settings
+ * sort messages by date
+ * Add messages count at bottom
+ * SMTP Authentication seems to always accept all logins
+ * Missing restore method settings
+ * Missing aliases settings
  * Need to add some site settings in the installation wizard. (Administrator and Aliases)(Also need to test the login of the Administrator to prevent lockout)

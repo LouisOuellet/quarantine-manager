@@ -81,8 +81,8 @@ class MAILER{
 		if($encryption == 'STARTTLS'||$encryption == 'starttls'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; }
 		$mail->SMTPOptions = [
 			'ssl' => [
-				'verify_peer' => false,
-				'verify_peer_name' => false,
+				// 'verify_peer' => false,
+				// 'verify_peer_name' => false,
 				'allow_self_signed' => true
 			]
 		];

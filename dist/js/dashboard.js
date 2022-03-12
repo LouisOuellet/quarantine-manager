@@ -1,6 +1,6 @@
 function loadDashboard(){
-  $('main div.sidebar ul li a').removeClass('active');
-  $('main div.sidebar ul li a[href="#dashboard"]').addClass('active');
+  $('main div.sidebar ul li a').removeClass('active').tooltip('hide');
+  $('main div.sidebar ul li a[href="#dashboard"]').addClass('active').tooltip('hide');
   var dashboard = $(document.createElement('div')).addClass("d-flex flex-column align-items-stretch noselect flex-shrink-0 bg-white").attr('data-field','uid');
   dashboard.controls = $(document.createElement('div')).addClass("d-flex align-items-center flex-shrink-0 p-3 link-dark text-decoration-none border-bottom");
   dashboard.controls.input = $(document.createElement('div')).addClass("input-group");
