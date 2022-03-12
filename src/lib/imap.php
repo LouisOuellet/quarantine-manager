@@ -12,15 +12,11 @@ class IMAP{
 	public $Status = false;
 	public $Folders = [];
 
-	public function __construct($host = null,$port = null,$encyption = null,$username = null,$password = null,$isSelfSigned = true){
-
-    // Increase PHP memory limit
-    ini_set('memory_limit', '2G');
-    ini_set('max_execution_time',0);
+	public function __construct($host = null,$port = null,$encryption = null,$username = null,$password = null,$isSelfSigned = true){
 
 		// Setup Connection
 		if($host != null){
-			$connection = $this->buildConnectionString($host,$port,$encyption,$isSelfSigned);
+			$connection = $this->buildConnectionString($host,$port,$encryption,$isSelfSigned);
 			$this->connect($username,$password,$connection,true);
 		}
 	}
@@ -29,7 +25,7 @@ class IMAP{
 
 	public function login($username,$password,$host = null,$port = null,$encryption = null,$isSelfSigned = true){
 		// Setup Connection
-		if($host == null){ $connection = null; } else { $connection = $this->buildConnectionString($host,$port,$encyption,$isSelfSigned); }
+		if($host == null){ $connection = null; } elseif($host != null && $port != null && $encryption != null && is_bool($isSelfSigned)) { $connection = $this->buildConnectionString($host,$port,$encryption,$isSelfSigned); } else { return false; }
 		if($IMAP = $this->connect($username,$password,$connection)){
 			$this->close($IMAP);
 			return true;
@@ -273,9 +269,10 @@ class IMAP{
 		if($password == null){ $password = $this->Password; }
 		if($username == null){ $username = $this->Username; }
 		// Connect IMAP
+		$level = error_reporting();
 		error_reporting(0);
-		if($IMAP = imap_open($connection, $username, $password)){
-			error_reporting(-1);
+		if($IMAP = imap_open($connection, $username, $password,OP_SILENT,0)){
+			error_reporting($level);
 			if($store){
 				$this->Connection = $connection;
 				$this->Username = $username;

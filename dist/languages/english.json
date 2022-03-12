@@ -71,5 +71,6 @@
     "Missing parameters": "Missing parameters",
     "Unable to login on server": "Unable to login on server",
     "Unable to login with this administrator on server": "Unable to login with this administrator on server",
-    "Save": "Save"
+    "Save": "Save",
+    "Restore": "Restore"
 }

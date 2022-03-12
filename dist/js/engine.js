@@ -10,7 +10,7 @@
 var Engine = {
 	initiated:false,
 	loggedin:false,
-	debug:false,
+	debug:true,
 	database:sessionStorage,
 	cache:localStorage,
 	init:function(){
