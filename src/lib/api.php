@@ -49,6 +49,9 @@ class API{
 		// Setup Restoration Method
 		if(!isset($this->Settings['method'])){ $this->Settings['method'] = 'copy'; }
 
+		// Setup Aliases
+		if(!isset($this->Settings['alias'])){ $this->Settings['alias'] = []; }
+
     // Setup URL
 		if(isset($_SERVER['HTTP_HOST'])){
 			$this->URL = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http")."://";
