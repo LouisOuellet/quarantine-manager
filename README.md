@@ -54,6 +54,6 @@ Please disclose any vulnerabilities found responsibly – report security issues
 
  * sort messages by date
 
-## Up comming features
+## Upcomming features
 
  * Need to add some site settings in the installation wizard. (Administrator and Aliases)(Also need to test the login of the Administrator to prevent lockout)
