@@ -2,6 +2,8 @@
 
 ## Version 22.03-14
 
+ * Added the administrator setting in the installer.
+ * If no administrator are set, the imap server user is set as the administrator.
  * Added additional screenshots
  * Added some documentations for spam policy on ISPConfig
  * Fix issue: administrator without password prevents saving settings.

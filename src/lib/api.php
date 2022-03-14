@@ -46,6 +46,9 @@ class API{
 		if(isset($this->Settings['debug']) && $this->Settings['debug']){ $this->Debug = true; }
     if($this->Debug){ error_reporting(E_ALL & ~E_NOTICE); } else { error_reporting(0); }
 
+		// Setup Administrator
+		if(!isset($this->Settings['admin'])){ $this->Settings['admin'] = $this->Settings['imap']['username']; }
+
 		// Setup Restoration Method
 		if(!isset($this->Settings['method'])){ $this->Settings['method'] = 'copy'; }
 
@@ -95,14 +98,14 @@ class API{
     return $make;
   }
 
-  protected function error($log = []){
-    $this->log(json_encode($log, JSON_PRETTY_PRINT));
+  protected function error($log = [], $force = false){
+    $this->log(json_encode($log, JSON_PRETTY_PRINT),$force);
     exit();
   }
 
-  protected function log($txt = " "){
+  protected function log($txt = " ", $force = false){
     if($this->Debug){ echo $txt."\n"; }
-    if(isset($this->Settings['log']['status']) && $this->Settings['log']['status']){
+    if($force || (isset($this->Settings['log']['status']) && $this->Settings['log']['status'])){
       return file_put_contents($this->Log, $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
     }
   }
