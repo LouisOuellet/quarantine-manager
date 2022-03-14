@@ -130,10 +130,6 @@ function loadSettings(){
   });
   settings.save.button.off().click(function(){
     var values = {
-      administrator:{
-        username: settings.list.administrator.form.username.field.val(),
-        password: settings.list.administrator.form.password.field.val(),
-      },
       language: settings.list.language.form.language.field.val(),
       timezone: settings.list.timezone.form.timezone.field.val(),
       imap:{
@@ -153,6 +149,12 @@ function loadSettings(){
       method: settings.list.method.form.method.field.val(),
       alias: {},
     };
+    if(settings.list.administrator.form.password.field.val()){
+      values.administrator = {
+        username: settings.list.administrator.form.username.field.val(),
+        password: settings.list.administrator.form.password.field.val(),
+      };
+    }
     settings.list.aliases.form.find('[data-entry]').each(function(){
       var from = $(this).find('[data-field="from"]').val();
       var to = $(this).find('[data-field="to"]').val();
