@@ -18,6 +18,9 @@ Do you have a dedicated mailbox do save all the emails Amavis and Rspamd filters
 ## Does it work with ISPConfig
 Yes! This is actually why I wrote the application.
 
+### Spam Policy example
+See [Spam Policy](SPAMPOLICY.md).
+
 ## Can I use this?
 If your email server is setup so that you have a dedicated mailbox for quarantined items, this project is for you.
 

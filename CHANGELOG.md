@@ -2,6 +2,8 @@
 
 ## Version 22.03-14
 
+ * Added additional screenshots
+ * Added some documentations for spam policy on ISPConfig
  * Fix issue: administrator without password prevents saving settings.
  * Default restoration method is now set during application initialization. So if you didn't have set the setting, the application still sets it in $this->Settings['method'].
  * Fix issue: SMTP Authentication seems to always accept all logins.
