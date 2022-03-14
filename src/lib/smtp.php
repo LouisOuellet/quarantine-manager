@@ -77,20 +77,19 @@ class MAILER{
 		$mail->Username = $username;
 		$mail->Password = $password;
 		$mail->SMTPDebug = false;
-		if($encryption == 'SSL'||$encryption == 'ssl'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; }
-		if($encryption == 'STARTTLS'||$encryption == 'starttls'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; }
+		if($encryption == 'SSL'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS; }
+		if($encryption == 'STARTTLS'){ $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS; }
+		$mail->Port = $port;
 		$mail->SMTPOptions = [
 			'ssl' => [
-				// 'verify_peer' => false,
-				// 'verify_peer_name' => false,
+				'verify_peer' => false,
+				'verify_peer_name' => false,
 				'allow_self_signed' => true
 			]
 		];
-		$mail->Port = $port;
 		// Test Connection
-		try { $mail->SmtpConnect();$mail->smtpClose(); return true; }
-		catch (phpmailerException $e) { return false; }
-		catch (Exception $e) { return false; }
+		if(!$mail->SmtpConnect()){ return false; }
+		$mail->smtpClose(); return true;
 	}
 
 	public function sendReset($email,$token){

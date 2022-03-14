@@ -1,5 +1,22 @@
 # Quarantine Manager Change Log
 
+## Version 22.03-14
+
+ * Default restoration method is now set during application initialization. So if you didn't have set the setting, the application still sets it in $this->Settings['method'].
+ * Fix issue: SMTP Authentication seems to always accept all logins.
+ * Added the restoration method settings in the settings panel.
+ * Added the aliases settings in the settings panel.
+ * Added counts on dashboard.
+ * Made the Settings's header fix position.
+ * Made the Settings's footer fix position.
+ * Made the Dashboard's header fix position.
+ * Made the Dashboard's footer fix position.
+ * Fix issue: signing out requires browser refresh
+
+## Version 22.03-12
+
+ * Added a confirmation before deletion.
+
 ## Version 22.03-11
 
  * PHP IMAP class: Found 3 typos. (encyption => encryption)
@@ -23,7 +40,7 @@
  * PHP Auth class: try method renamed to authenticate and now handles all authentication steps previously split with the __construct method.
  * Added a default timezone of 'America/Toronto' now accessible in $this->Timezone and Engine.Storage.get('timezone').
 
- ## Version 22.03-10
+## Version 22.03-10
 
  * Fix a bug in the Javascript Engine where Debug was always turned on.
  * MAIL class rename MAILER.

@@ -43,8 +43,11 @@ class API{
 		}
 
 		// Setup Debug
-		if((isset($this->Settings['debug']))&&($this->Settings['debug'])){ $this->Debug = true; }
+		if(isset($this->Settings['debug']) && $this->Settings['debug']){ $this->Debug = true; }
     if($this->Debug){ error_reporting(E_ALL & ~E_NOTICE); } else { error_reporting(0); }
+
+		// Setup Restoration Method
+		if(!isset($this->Settings['method'])){ $this->Settings['method'] = 'copy'; }
 
     // Setup URL
 		if(isset($_SERVER['HTTP_HOST'])){
@@ -170,10 +173,10 @@ class API{
       $uid=str_replace(['>','<'],['',''],$msg->UID);
       $results[$uid] = [
         "uid" => $uid,
+        "date" => date('Y-m-d H:i:s',strtotime($msg->Date)),
         "sender" => $msg->From,
         "subject" => $msg->Subject->Full,
         "body" => $msg->Body->Content,
-        "date" => date('Y-m-d H:i:s',strtotime($msg->Date)),
         "attachments" => []
       ];
       foreach($msg->Attachments->Files as $file){
@@ -456,13 +459,14 @@ class API{
       foreach($recipients as $recipient){
         // Retrieve TO
         $inbox = $this->Auth->IMAP->search('TO "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+        $messages = $messages + $this->formatMsgs($inbox->messages);
         // Retrieve CC
         $inbox = $this->Auth->IMAP->search('CC "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+        $messages = $messages + $this->formatMsgs($inbox->messages);
         // Retrieve BCC
         $inbox = $this->Auth->IMAP->search('BCC "'.strtolower($recipient).'" SINCE "'.date("d-M-Y",strtotime("2 weeks ago")).'"');
-        $messages = array_unique(array_merge($messages,$this->formatMsgs($inbox->messages)), SORT_REGULAR);
+        $messages = $messages + $this->formatMsgs($inbox->messages);
+        ksort($messages, SORT_STRING);
       }
       // Return
       return [

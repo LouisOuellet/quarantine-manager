@@ -15,9 +15,15 @@ function loadDashboard(){
   dashboard.controls.input.actions.append([dashboard.controls.input.actions.restore,dashboard.controls.input.actions.delete]);
   dashboard.controls.input.append([dashboard.controls.input.select,dashboard.controls.input.action,dashboard.controls.input.actions,dashboard.controls.input.field,dashboard.controls.input.clear,dashboard.controls.input.search]);
   dashboard.controls.append(dashboard.controls.input);
-  dashboard.list = $(document.createElement('div')).addClass("list-group list-group-flush border-bottom scrollarea");
+  dashboard.list = $(document.createElement('div')).addClass("d-flex list-group flex-shrink-0 list-group-flush border-bottom scroll-y dashboard-viewport");
   dashboard.list.row = {};
   dashboard.list.data = {};
+  dashboard.count = $(document.createElement('div')).addClass("p-3 text-center text-muted");
+  dashboard.count.append(Engine.Storage.get('language',['fields','Selected']));
+  dashboard.count.selected = $(document.createElement('span')).addClass("dashboard-count mx-1").appendTo(dashboard.count);
+  dashboard.count.append(Engine.Storage.get('language',['fields','of']));
+  dashboard.count.total = $(document.createElement('span')).addClass("dashboard-count mx-1").appendTo(dashboard.count);
+  dashboard.count.append(Engine.Storage.get('language',['fields','messages']));
   dashboard.item = $(document.createElement('a')).addClass("list-group-item list-group-item-action py-3 lh-tight msg-item");
   dashboard.item.header = $(document.createElement('a')).addClass("d-flex w-100 align-items-center justify-content-between link-dark msg-sender");
   dashboard.item.header.sender = $(document.createElement('strong')).addClass("mb-1 noselect").attr('data-field','sender');
@@ -27,7 +33,7 @@ function loadDashboard(){
   dashboard.item.attachments.list = $(document.createElement('ul')).addClass("list-group list-group-horizontal small");
   dashboard.item.attachments.item = $(document.createElement('li')).addClass("list-group-item small text-muted msg-item-attachment");
   dashboard.item.attachments.append(dashboard.item.attachments.list);
-  dashboard.append([dashboard.controls,dashboard.list]);
+  dashboard.append([dashboard.controls,dashboard.list,dashboard.count]);
   dashboard.item.header.append([dashboard.item.header.sender,dashboard.item.header.date]);
   dashboard.item.append([dashboard.item.header,dashboard.item.subject]);
   dashboard.controls.input.actions.restore.off().click(function(){
@@ -38,17 +44,43 @@ function loadDashboard(){
     });
   });
   dashboard.controls.input.actions.delete.off().click(function(){
-    dashboard.list.children('a.active').each(function(){
-      Engine.request('api','delete',{data:$(this).attr('data-uid')}).then(function(dataset){
-        dashboard.list.row[dataset.uid].remove();
-      });
+    Swal.fire({
+      title: Engine.Storage.get('language',['fields','Are you sure?']),
+      text: Engine.Storage.get('language',['fields',"You won't be able to revert this!"]),
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0d6efd',
+      cancelButtonColor: '#dc3545',
+      confirmButtonText: Engine.Storage.get('language',['fields','Yes, delete them!'])
+    }).then((result) => {
+      if(result.value){
+        dashboard.list.children('a.active').each(function(){
+          Engine.request('api','delete',{data:$(this).attr('data-uid'),toast:false}).then(function(dataset){
+            dashboard.list.row[dataset.uid].remove();
+          });
+        });
+        var checkRemoved = setInterval(function(){
+          if(dashboard.list.children('a.active').length <= 0){
+            clearInterval(checkRemoved);
+            Swal.fire({
+              title: Engine.Storage.get('language',['fields','Deleted!']),
+              text: Engine.Storage.get('language',['fields','Your emails have been deleted.']),
+              icon: 'success',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          }
+        }, 100);
+      }
     });
   });
   dashboard.controls.input.select.off().click(function(){
     if(dashboard.list.children('a.active').length != dashboard.list.children().length){
       dashboard.list.children().removeClass('active').addClass('active');
+      dashboard.count.selected.html(dashboard.list.children('a.active').length);
     } else {
       dashboard.list.children().removeClass('active');
+      dashboard.count.selected.html(dashboard.list.children('a.active').length);
     }
   });
   dashboard.controls.input.clear.off().click(function(){
@@ -62,11 +94,13 @@ function loadDashboard(){
   	} else { dashboard.list.find('[data-search]').show(); }
   });
   $('main div.content').html(dashboard);
+  dashboard.count.selected.html(dashboard.list.children('a.active').length);
+  dashboard.count.total.html(dashboard.list.children('a').length);
   dashboard.request = Engine.request('api','retrieve',{data:Engine.Storage.get('username')}).then(function(dataset){
     for(var [uid, message] of Object.entries(dataset.messages)){
       var csv = message.uid.toLowerCase()+', '+message.sender.toLowerCase()+', '+message.subject.toLowerCase()+', '+message.date.toLowerCase();
       dashboard.list.data[message.uid] = message;
-      dashboard.list.row[message.uid] = dashboard.item.clone().attr('data-uid',message.uid).appendTo(dashboard.list);
+      dashboard.list.row[message.uid] = dashboard.item.clone().attr('data-uid',message.uid).attr('datetime',message.date).appendTo(dashboard.list);
       dashboard.list.row[message.uid].find('[data-field="sender"]').html(message.sender);
       dashboard.list.row[message.uid].find('[data-field="subject"]').html(message.subject);
       dashboard.list.row[message.uid].find('[data-field="date"]').attr('title',message.date).tooltip().attr('datetime',message.date).timeago();
@@ -81,11 +115,15 @@ function loadDashboard(){
       dashboard.list.row[message.uid].off().click(function(){
         if($(this).hasClass("active")){
           $(this).removeClass('active');
+          dashboard.count.selected.html(dashboard.list.children('a.active').length);
         } else {
           $(this).addClass('active');
+          dashboard.count.selected.html(dashboard.list.children('a.active').length);
         }
       });
+      // Engine.Helper.sortElements(dashboard.list,'data-datetime');
     }
+    dashboard.count.total.html(dashboard.list.children('a').length);
   });
   return dashboard;
 }
