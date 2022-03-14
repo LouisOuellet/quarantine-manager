@@ -5,7 +5,6 @@
 ![GitHub repo size](https://img.shields.io/github/repo-size/LouisOuellet/quarantine-manager?style=for-the-badge&logo=github)
 ![GitHub top language](https://img.shields.io/github/languages/top/LouisOuellet/quarantine-manager?style=for-the-badge&logo=php)
 ![GitHub version](https://img.shields.io/badge/version-22.03--14-green?style=for-the-badge)
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed-raw/LouisOuellet/quarantine-manager?color=succes&label=Pull%20Requests&logo=github&style=for-the-badge)
 
 ## Features
  - Simple interface
