@@ -72,5 +72,21 @@
     "Unable to login on server": "Impossible de se connecter au serveur",
     "Unable to login with this administrator on server": "Impossible de se connecter avec cet administrateur sur le serveur",
     "Save": "Sauvegarder",
-    "Restore": "Restaurer"
+    "Restore": "Restaurer",
+    "Are you sure?": "Vous êtes sûr ?",
+    "You won't be able to revert this!": "Vous ne pourrez pas revenir en arrière !",
+    "Yes, delete them!": "Oui, supprimez-les!",
+    "Deleted!": "Supprimés!",
+    "Your emails have been deleted.": "Vos emails ont été supprimés.",
+    "Restoration Method": "Méthode de restauration",
+    "Method": "Méthode",
+    "Resend": "Renvoyer",
+    "Copy": "Copie",
+    "Aliases": "Alias",
+    "From": "De",
+    "To": "À",
+    "Yes, delete this!": "Oui, supprimez ceci!",
+    "Selected": "Sélectionné",
+    "messages": "messages",
+    "of": "de"
 }

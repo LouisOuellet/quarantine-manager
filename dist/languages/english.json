@@ -72,5 +72,21 @@
     "Unable to login on server": "Unable to login on server",
     "Unable to login with this administrator on server": "Unable to login with this administrator on server",
     "Save": "Save",
-    "Restore": "Restore"
+    "Restore": "Restore",
+    "Are you sure?": "Are you sure?",
+    "You won't be able to revert this!": "You won't be able to revert this!",
+    "Yes, delete them!": "Yes, delete them!",
+    "Deleted!": "Deleted!",
+    "Your emails have been deleted.": "Your emails have been deleted.",
+    "Restoration Method": "Restoration Method",
+    "Method": "Method",
+    "Resend": "Resend",
+    "Copy": "Copy",
+    "Aliases": "Aliases",
+    "From": "From",
+    "To": "To",
+    "Yes, delete this!": "Yes, delete this!",
+    "Selected": "Selected",
+    "messages": "messages",
+    "of": "of"
 }

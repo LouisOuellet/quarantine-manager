@@ -2,75 +2,61 @@
 
 # Quarantine Manager - Manage your quarantined emails using IMAP
 ![License](https://img.shields.io/github/license/LouisOuellet/quarantine-manager?style=for-the-badge)
-![GitHub repo size](https://img.shields.io/github/repo-size/LouisOuellet/quarantine-manager?style=for-the-badge)
-![GitHub top language](https://img.shields.io/github/languages/top/LouisOuellet/quarantine-manager?style=for-the-badge)
-![GitHub version](https://img.shields.io/badge/version-22.03--11-green?style=for-the-badge)
+![GitHub repo size](https://img.shields.io/github/repo-size/LouisOuellet/quarantine-manager?style=for-the-badge&logo=github)
+![GitHub top language](https://img.shields.io/github/languages/top/LouisOuellet/quarantine-manager?style=for-the-badge&logo=php)
+![GitHub version](https://img.shields.io/badge/version-22.03--14-green?style=for-the-badge)
 
+## Features
+ - Simple interface
+ - You can choose between 2 restorations methods. Resend or Copy. Resend will save the quarantined email in a .eml file and send it to the user's mailbox. While the copy method will simply create a copy of the quarantined email into the user's mailbox.
+ - Restore or delete multiple emails at once.
+ - Support for aliases. So 1 user can access the quarantined emails of multiple accounts.
 
-## Can I use this?
-If your email server is setup so that you have a dedicated mailbox for quarantined items, this project is for you.
+## Why you might need it
+Do you have a dedicated mailbox do save all the emails Amavis and Rspamd filters? How do you manage it? Wouldn't you want users to handle their own quarantine emails? Well this tool allows multiple users to manage the quarantine mailbox.
 
 ## Does it work with ISPConfig
 Yes! This is actually why I wrote the application.
 
+### Spam Policy example
+See [Spam Policy](SPAMPOLICY.md).
+
+## Can I use this?
+If your email server is setup so that you have a dedicated mailbox for quarantined items, this project is for you.
+
+### License
+This software is distributed under the [MIT](https://en.wikipedia.org/wiki/MIT_License) license. Please read [LICENSE](LICENSE) for information on the software availability and distribution.
+
+## Screenshots
+See [Screenshots](screenshots).
+
+## Localization
+Quarantine Manager defaults to English, but in the [language](dist/languages/) folder you'll find many translations for Quarantine Manager error messages that you may encounter.
+
+We welcome corrections and new languages.
+
 ## Requirements
 A web server with php-imap installed.
 
-## How to
-### Setup
-Simply copy the files into a root directory of your website. Once done simply visit the site. An installation wizard will be waiting for you.
+## Installation
+Simply copy the files into a root directory of your website.
 
-## ChangeLog
+```sh
+git clone https://github.com/LouisOuellet/quarantine-manager
+```
 
- * [2022-03-11][PHP IMAP class]: Found 3 typos. (encyption => encryption)
- * [2022-03-11]: Added the save event for the settings. Only need to test now.
- * [2022-03-11][PHP API class]: Added a save method to save the settings
- * [2022-03-11]: Added the following settings in the settings area: (IMAP,SMTP,Timezone,Language and Administrator).
- * [2022-03-11]: Added a tooltip on the date of the email to display the full date.
- * [2022-03-11][PHP API class]: Added a list method to retrieve application settings.
- * [2022-03-11][PHP API class]: Added a isAdmin method to test if the loggedin user is the administrator.
- * [2022-03-11]: You can now enable debug by adding ```"debug": true,``` in the config/config.json file.
- * [2022-03-11][PHP MAILER class]: Fix logo. The logo will now be displayed only if link to file is provided.
- * [2022-03-11][PHP MAILER class]: Fix footer links. Only provided links will now be shown in the footer.
- * [2022-03-11]: Added support for an administrator
- * [2022-03-11]: Fixed the "Overflow-y when listing gets too long" issue
- * [2022-03-11]: Fixed an issue where the Sign Out function would cause the user to re-login with the session data.
- * [2022-03-11][PHP URL class]: Added a sanitize method.
- * [2022-03-11][JS Engine]: Added proper support for Pace. Pace loading is now accurate with the AJAX Requests
- * [2022-03-11]: Added a menu item settings only available to admin
- * [2022-03-11][PHP Auth class]: Changed the try method to use the builtin login method.
- * [2022-03-11][PHP Auth class]: Logged in user now accessible in $this->Auth->Username.
- * [2022-03-11][PHP Auth class]: try method renamed to authenticate and now handles all authentication steps previously split with the __construct method.
- * [2022-03-11]: Added a default timezone of 'America/Toronto' now accessible in $this->Timezone and Engine.Storage.get('timezone').
- * [2022-03-10]: Fix a bug in the Javascript Engine where Debug was always turned on.
- * [2022-03-10]: MAIL class rename MAILER.
- * [2022-03-10]: PHPIMAP class rename IMAP.
- * [2022-03-10]: Added support for aliases.
- * [2022-03-10]: Added a new restoring method. You can now choose between resend or copy. Default is copy.
- * [2022-03-10][PHP IMAP class]: Added support of multiple IMAP connections.
- * [2022-03-10][PHP IMAP class]: Added a changeFolder method.
- * [2022-03-10][PHP IMAP class]: Revisited the saveEml method and renamed it getEml.
- * [2022-03-10][PHP IMAP class]: Added a saveEml method to save an eml into a mailbox.
- * [2022-03-10][PHP IMAP class]: Added a __destruct method to close the main IMAP connection.
- * [2022-03-10][PHP IMAP class]: Added a buildConnectionString method to build a mailbox string.
- * [2022-03-10][PHP IMAP class]: Added a connect method to connect a mailbox.
- * [2022-03-10]: A new logging system has been added.
- * [2022-03-10]: Multiple fixes to the PHPIMAP class.
- * [2022-03-10][PHP PHPIMAP class]: created a new method formatMsgs to format the messages array.
- * [2022-03-10][PHP PHPIMAP class]: Added UNSEEN email count to the search method.
- * [2022-03-10][PHP PHPIMAP class]: Added default criteria to the search method.
- * [2022-03-10][PHP PHPIMAP class]: Live IMAP Connections are now saved in the IMAP Property.
- * [2022-03-10][PHP PHPIMAP class]: Closing the IMAP connection on successful login.
- * [2022-03-10]: 1 fix to the MAIL class.
- * [2022-03-10][PHP MAIL class]: Clearing attachments before adding the new one.
- * [2022-03-10]: 1 fix to the API class.
- * [2022-03-10][PHP API class]: Fixing the creation of the tmp directory.
+Once done simply visit the site, an installation wizard will be waiting for you.
+
+## Changelog
+See [changelog](CHANGELOG.md).
+
+## Security
+Please disclose any vulnerabilities found responsibly – report security issues to the maintainers privately.
 
 ## Known Issues
 
  * sort messages by date
- * Add messages count at bottom
- * SMTP Authentication seems to always accept all logins
- * Missing restore method settings
- * Missing aliases settings
+
+## Upcomming features
+
  * Need to add some site settings in the installation wizard. (Administrator and Aliases)(Also need to test the login of the Administrator to prevent lockout)
