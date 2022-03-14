@@ -44,8 +44,6 @@ $(function(){
           var error = 0;
           function setProgress(value){
             var progress = Math.round(((value / max) * 100));
-            console.log($('#log-progress'));
-            console.log('error: ', error,'progress: ', progress,'attr: ', parseInt($('#log-progress').attr('aria-valuenow')),parseInt(progress) == parseInt($('#log-progress').attr('aria-valuenow')));
             if(parseInt(progress) == parseInt($('#log-progress').attr('aria-valuenow'))){ error++; } else { error = 0; }
             $('#log-progress').attr('aria-valuenow',progress).width(progress+'%').html(progress+'%');
             switch(true){
@@ -70,6 +68,7 @@ $(function(){
                 if(data.includes("IMAP Authenticated")){ now++; }
                 if(data.includes("SMTP Set")){ now++; }
                 if(data.includes("SMTP Authenticated")){ now++; }
+                if(data.includes("Administrator Authenticated")){ now++; }
                 if(data.includes("Language Set")){ now++; }
                 if(data.includes("Timezone Set")){ now++; }
                 if(data.includes("Installation has completed successfully")){ now++; }
@@ -80,7 +79,7 @@ $(function(){
                   $('#log-progress').addClass('bg-success').html('Completed');
                   $('a[data-action="login"]').show();
                 } else { setProgress(now); }
-                if(data.includes("Application is already installed")||data.includes("No IMAP settings provided")||data.includes("Unable to authenticate on IMAP server")||data.includes("No SMTP settings provided")||data.includes("Unable to authenticate on SMTP server")||data.includes("No language provided")||data.includes("No timezone provided")||data.includes("Unable to complete the installation")){
+                if(data.includes("Application is already installed")||data.includes("Unable to authenticate the Administrator")||data.includes("No IMAP settings provided")||data.includes("Unable to authenticate on IMAP server")||data.includes("No SMTP settings provided")||data.includes("Unable to authenticate on SMTP server")||data.includes("No language provided")||data.includes("No timezone provided")||data.includes("Unable to complete the installation")){
                   clearInterval(checkLog);
                   setProgress(max);
                   $('#log-progress').attr("class", "progress-bar progress-bar-striped progress-bar-animated").addClass('bg-danger').html('Error');
@@ -104,6 +103,8 @@ $(function(){
     $('#review_smtp_port').html($(document.getElementById("smtp_port")).val());
     $('#review_smtp_username').html($(document.getElementById("smtp_username")).val());
     $('#review_smtp_password').html($(document.getElementById("smtp_password")).val());
+    $('#review_admin_username').html($(document.getElementById("admin_username")).val());
+    $('#review_admin_password').html($(document.getElementById("admin_password")).val());
   	$('#review_language').html($(document.getElementById("language")).find('option:selected').text());
   	$('#review_timezone').html($(document.getElementById("timezone")).find('option:selected').text());
   });
@@ -132,6 +133,10 @@ $(function(){
         data: {
           language: document.getElementById("language").value,
           timezone: document.getElementById("timezone").value,
+          administrator: {
+            username: document.getElementById("admin_username").value,
+            password: document.getElementById("admin_password").value,
+          },
           imap: {
             host: document.getElementById("imap_host").value,
             encryption: document.getElementById("imap_encryption").value,
