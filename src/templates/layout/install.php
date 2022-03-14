@@ -151,6 +151,24 @@
             </div>
             <div class="card-body">
               <div class="form-group row">
+                <label for="smtp_username" class="col-sm-2 col-form-label"><?= $this->Fields['Administrator'] ?></label>
+                <div class="col-sm-10 input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-at"></i>
+                  </span>
+                  <input type="text" class="form-control" name="admin_username" id="admin_username" placeholder="<?= $this->Fields['Administrator'] ?>">
+                </div>
+              </div>
+              <div class="form-group row">
+                <label for="smtp_password" class="col-sm-2 col-form-label"><?= $this->Fields['Password'] ?></label>
+                <div class="col-sm-10 input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-key"></i>
+                  </span>
+                  <input type="password" class="form-control" name="admin_password" id="admin_password" placeholder="<?= $this->Fields['Password'] ?>">
+                </div>
+              </div>
+              <div class="form-group row">
                 <label for="language" class="col-sm-2 col-form-label"><?= $this->Fields['Language'] ?></label>
                 <div class="col-sm-10 input-group">
                   <span class="input-group-text">
@@ -167,7 +185,7 @@
                 <label for="timezone" class="col-sm-2 col-form-label"><?= $this->Fields['Timezone'] ?></label>
                 <div class="col-sm-10 input-group">
                   <span class="input-group-text">
-                    <i class="far fa-globe-americas"></i>
+                    <i class="fas fa-globe-americas"></i>
                   </span>
                   <select class="form-control" name="timezone" id="timezone">
                     <?php foreach($this->Timezones as $timezone) {?>
@@ -275,6 +293,14 @@
                     <h5><?= $this->Fields['Site Configuration'] ?></h5>
                   </div>
                   <div class="card-body">
+                    <div class="row border-bottom pt-2">
+                      <div class="col-4"><?= $this->Fields['Administrator'] ?></div>
+                      <div class="col-8" id="review_admin_username"></div>
+                    </div>
+                    <div class="row border-bottom pt-2">
+                      <div class="col-4"><?= $this->Fields['Password'] ?></div>
+                      <div class="col-8" id="review_admin_password"></div>
+                    </div>
                     <div class="row border-bottom pt-2">
                       <div class="col-4"><?= $this->Fields['Language'] ?></div>
                       <div class="col-8" id="review_language"></div>
