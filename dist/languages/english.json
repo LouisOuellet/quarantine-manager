@@ -73,7 +73,6 @@
     "Unable to login with this administrator on server": "Unable to login with this administrator on server",
     "Save": "Save",
     "Restore": "Restore",
-    "": "",
     "Are you sure?": "Are you sure?",
     "You won't be able to revert this!": "You won't be able to revert this!",
     "Yes, delete them!": "Yes, delete them!",
@@ -89,6 +88,5 @@
     "Yes, delete this!": "Yes, delete this!",
     "Selected": "Selected",
     "messages": "messages",
-    "of": "of",
-    "": ""
+    "of": "of"
 }
