@@ -177,7 +177,7 @@ class IMAP{
 					}
 				}
 			}
-			$messages[$msg->ID] = $msg;
+			$messages[$msg->UID] = $msg;
 			// Resetting Flag
 			if(isset($opt["new"]) && is_bool($opt["new"]) && $opt["new"]){ imap_clearflag_full($IMAP,$id, "\\Seen"); }
 		}

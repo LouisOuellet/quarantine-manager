@@ -125,10 +125,19 @@ main {
   width: 100vw;
   max-width: 100vw;
   overflow-x: auto;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 .scrollarea {
   overflow-y: auto;
+}
+.scroll-y {
+  overflow-y: scroll;
+}
+.dashboard-viewport {
+  height: calc(100vh - 72px - 56px);
+}
+.settings-viewport {
+  height: calc(100vh - 89px - 72px);
 }
 .fw-semibold { font-weight: 600; }
 .lh-tight { line-height: 1.25; }
@@ -216,7 +225,6 @@ div.content {
   height: -webkit-fill-available;
   height: 100vh;
   max-height: 100vh;
-  overflow-y: scroll;
 }
 .msg-sender{
   text-decoration: none;

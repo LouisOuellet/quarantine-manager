@@ -10,7 +10,7 @@
 var Engine = {
 	initiated:false,
 	loggedin:false,
-	debug:true,
+	debug:false,
 	database:sessionStorage,
 	cache:localStorage,
 	init:function(){
@@ -157,6 +157,32 @@ var Engine = {
 		},
 	},
 	Helper:{
+    sortElements:function(list, by = 'value'){
+      var items = list.children();
+      items.sort(function(a,b){
+        // Cache inner content from the first element (a) and the next sibling (b)
+        var aText = $(a).attr(by);
+        var bText = $(b).attr(by);
+        // Returning -1 will place element `a` before element `b`
+        if(aText < bText){ return -1; }
+        // Returning 1 will do the opposite
+        if(aText > bText){ return 1; }
+        // Returning 0 leaves them as-is
+        return 0;
+      });
+      list.prepend(items);
+      // list.children().sort(function(a, b){
+      //   console.log($(a))
+      //   return $(a).attr(by) > $(b).attr(by);
+      // }).appendTo(list);
+
+      // var header = $(this), name = header.attr('data-header');
+			// var items = $('.sidebar nav ul').children('li.nav-item[data-header="'+name+'"]').detach().get();
+			// items.sort(function(a, b){
+		  //   return $(a).data("order") - $(b).data("order");
+		  // });
+			// header.after(items);
+    },
 		isJson:function(json) {
 			if(typeof json === 'string'){
 				try { JSON.parse(json); } catch (e) { return false; }
